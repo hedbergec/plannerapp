@@ -2,6 +2,7 @@
 #### reads functions
 #### makes ui lists
 #### saves environment for app
+#### git push --set-upstream plannerapp master
 
 rm(list = ls()) #clean slate
 system("rm -R auto functions")
