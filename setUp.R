@@ -11,6 +11,7 @@ dir.create("auto functions")
 library(readxl)
 library(tidyverse)
 library(shiny)
+library(plotly)
 
 #### Read in manager specs from xls file
 
