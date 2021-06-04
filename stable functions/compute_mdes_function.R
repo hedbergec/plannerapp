@@ -17,17 +17,10 @@ compute_mdes <- function( #function to iteratively find MDES, returns exact resu
     )
   )*sqrt(1/V)
   
-  ncp_start <- compute_ncp( #ncp of approx
-    es = starter_es,
-    V = V
-  )
+  ncp_start <- es*sqrt(V)
   
-  beta_start <- compute_beta( #beta of approx
-    ncp = ncp_start,
-    df = df,
-    alpha = alpha, 
-    tails = tails
-  )
+  beta_start <- (pt(qt(alpha/tails,df, lower.tail = FALSE),df,ncp) - 
+                   pt(-qt(alpha/tails,df, lower.tail = FALSE),df,ncp))
   
   if (beta < beta_start) { #if beta is too big
     es_search_caliper <- (1-beta)/(1-beta_start)*(1-1/1e10) #10 is likely overkill
