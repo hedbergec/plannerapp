@@ -94,14 +94,13 @@ server <- function(input, output) {
       ]][[paste0(input$design,"_",input$inference,"_",input$model)
       ]][["inputs"]]
     )
-    set_list_drop <- length(set_list) #remove "ranges"
+    set_list_drop <- length(set_list) #remove "ranges," the last element
     return(menuBank$samplePicked[[input$sample
     ]][["designPicked"
     ]][[input$design
     ]][["dimPicked"
     ]][[paste0(input$design,"_",input$inference,"_",input$model)
     ]][["inputs"]][-set_list_drop])
-    
   })
   
   output$input_set <- renderUI({
@@ -321,20 +320,6 @@ server <- function(input, output) {
       beta = input$beta
     )
   })
-  
-  output$powerlist <- renderPrint({
-    list(
-      es = input$es,
-      alpha = input$alpha,
-      beta = beta()$value,
-      power = power()$value,
-      ncp = ncp()$value,
-      df = df()$value,
-      dfcmd = df()$cmd,
-      V = V()$value,
-      Vcmd = df()$cmd
-    )
-  })
 }
 
 ui <- fluidPage(
@@ -365,10 +350,6 @@ ui <- fluidPage(
                  ),
                  fluidRow(
                    h1("Range TDB")
-                 ),
-                 fluidRow(
-                   h3("Diagnostic"),
-                   verbatimTextOutput("powerlist")
                  )
         ),
         tabPanel("MDES",
