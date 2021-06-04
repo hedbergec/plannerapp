@@ -17,10 +17,10 @@ compute_mdes <- function( #function to iteratively find MDES, returns exact resu
     )
   )*sqrt(1/V)
   
-  ncp_start <- es*sqrt(V)
+  ncp_start <- starter_es*sqrt(V)
   
-  beta_start <- (pt(qt(alpha/tails,df, lower.tail = FALSE),df,ncp) - 
-                   pt(-qt(alpha/tails,df, lower.tail = FALSE),df,ncp))
+  beta_start <- (pt(qt(alpha/tails,df, lower.tail = FALSE),df,ncp_start) - 
+                   pt(-qt(alpha/tails,df, lower.tail = FALSE),df,ncp_start))
   
   if (beta < beta_start) { #if beta is too big
     es_search_caliper <- (1-beta)/(1-beta_start)*(1-1/1e10) #10 is likely overkill
@@ -40,16 +40,9 @@ compute_mdes <- function( #function to iteratively find MDES, returns exact resu
   
   while(eval(parse(text = paste0("beta",test_string,"beta_check")))) {
     mdes <- mdes * es_search_caliper
-    ncp_next <- compute_ncp(
-      es = mdes,
-      V = V
-    )
-    beta_check <- compute_beta(
-      ncp = ncp_next,
-      df = df,
-      alpha = alpha, 
-      tails = tails
-    )
+    ncp_next <- mdes*sqrt(V)
+    beta_check <- (pt(qt(alpha/tails,df, lower.tail = FALSE),df,ncp_next) - 
+                     pt(-qt(alpha/tails,df, lower.tail = FALSE),df,ncp_next))
   }
   
   return( #return restults
@@ -57,7 +50,7 @@ compute_mdes <- function( #function to iteratively find MDES, returns exact resu
       #starter_es = starter_es,
       #starter_power = compute_power(beta_start),
       mdes = mdes,
-      exact_power = compute_power(beta_check)
+      exact_power = 1-beta_check
     )
   )
 }
