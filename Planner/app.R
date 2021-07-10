@@ -375,15 +375,13 @@ server <- function(input, output) {
                 choices = c(
                   "make choice/reset" = "waiting",
                   "Random Selection of Schools to treatment" = "between_random",
-                  "Matching on school characteristics" = "between_biased_school",
-                  "Matching on school averages of student characteristics" = "between_biased_student",
-                  "Matching on school characteristics and averages of student characteristics" = "between_biased_school_student"
+                  "Systematic Selection of Schools to treatment" = "between_biased_school_student"
                 )
     )
     
   })
   
-
+  
   output$selectionTitle <- renderUI({
     req(input$qedScenario != "waiting")
     h3("Select Schools")
@@ -462,7 +460,7 @@ server <- function(input, output) {
       select(-contains(c("school","treat"))) %>% 
       summarise_all(mean) %>%
       as.matrix()
- 
+    
     
   })
   
@@ -474,9 +472,6 @@ server <- function(input, output) {
       select(-contains(c("school","treat"))) %>% 
       data.frame() %>%
       cov()
-    
-    
-    
   })
   
   
@@ -486,32 +481,30 @@ server <- function(input, output) {
     req(qedData())
     req(qed_mahalanobis_center())
     req(qed_mahalanobis_Sigma())
+    
     data <- qedData() %>% 
-      filter(treat == 0) %>% 
+      filter(treat == 0)
+    
+    data$d <- mahalanobis(data %>%
+                            select(-contains(c("school","treat"))) %>% 
+                            data.frame()
+                          ,center = qed_mahalanobis_center(), 
+                          cov = qed_mahalanobis_Sigma()) 
+    data <- data %>% 
       select(-treat) %>%
       group_by(school) %>%
       mutate(N = n()) %>%
       summarise_all(c("mean","sd")) %>%
       mutate(N = N_mean) %>%
-      select(-c(N_mean, N_sd)) %>%
+      mutate(Sqrt_MahalanobisD = sqrt(d_mean)) %>%
+      select(-c(N_mean, N_sd, d_mean, d_sd)) %>%
       relocate(c(school,N)) %>%
       data.frame() 
-
-    data$Sqrt_MahalanobisD <- qedData() %>% 
-      filter(treat == 0) %>% 
-      select(-treat) %>%
-      group_by(school) %>%
-      summarise_all(mean) %>%
-      ungroup() %>%
-      select(-contains(c("school","treat"))) %>%
-      mahalanobis(center = qed_mahalanobis_center(), 
-                  cov = qed_mahalanobis_Sigma()) %>%
-      as.matrix() %>% sqrt()
     
     data <- data %>% 
       relocate(c(school, N, Sqrt_MahalanobisD)) %>% 
       data.frame() %>% round(digits = 2) 
-
+    
     return(data)
   })
   
@@ -566,7 +559,7 @@ server <- function(input, output) {
     return(data)
   })
   
-
+  
   sumstats <- reactive({
     req(qed_made_data())
     sumstats <- qed_made_data() %>% 
@@ -594,7 +587,7 @@ server <- function(input, output) {
       sd_i <- sumstats()[2,paste0(v,"_sd")]
       m_c <- sumstats()[1,paste0(v,"_mean")]
       m_i <- sumstats()[2,paste0(v,"_mean")]
-
+      
       if (v == "pretest") {
         results[[v]] <- (1-(3/(4*(n_i+n_c)-9)))*((m_i-m_c)/(sqrt((sd_c^2*(n_c-1)+sd_i^2*(n_i-1))/(n_c+n_i-2)))
         )
@@ -603,6 +596,13 @@ server <- function(input, output) {
         results[[v]] <- (1-(3/(4*(n_i+n_c)-9)))*log((m_i*(1-m_c))/(m_c*(1-m_i)))/1.65
       }
       
+      results[["MD"]] <- qed_made_data() %>% 
+        filter(treat == 0) %>%
+        select(-c(school,treat)) %>%
+        data.frame() %>% 
+        mahalanobis(center = qed_mahalanobis_center(), 
+                    cov = qed_mahalanobis_Sigma()) %>% 
+        mean() %>% sqrt()
       
       
     }
@@ -705,7 +705,7 @@ ui <- fluidPage(
           )
         )
       )
-     ),
+    ),
     tabPanel(
       "QED Selection",
       fluid = TRUE,
@@ -726,7 +726,7 @@ ui <- fluidPage(
                 uiOutput("sum_stats_tableUI"),
                 uiOutput("balance_stats_tableTitle"),
                 uiOutput("balance_stats_tableUI")
-          
+                
               ),
               fluidRow(
                 uiOutput("qedDescribeTitle"),
@@ -746,3 +746,4 @@ ui <- fluidPage(
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+

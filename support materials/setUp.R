@@ -10,7 +10,9 @@
 #https://canvas.northwestern.edu/courses/135809
 #NetID: ehr6170 
 
-set.seed(123)
+set.seed(1701)
+
+source("support materials/makeQEDData.R")
 
 rm(list = ls()) #clean slate
 system('rm -R "./auto functions/"')
@@ -25,12 +27,12 @@ library(data.table)
 
 #### Read in manager specs from xls file
 
-managerSheets <- excel_sheets("menuManager.xlsx")
+managerSheets <- excel_sheets("support materials/menuManager.xlsx")
 
 manager <- list()
 
 for (sheet in managerSheets) {
-  manager[[paste0(sheet,"Manager")]] <- read_excel("menuManager.xlsx", sheet = sheet)
+  manager[[paste0(sheet,"Manager")]] <- read_excel("support materials/menuManager.xlsx", sheet = sheet)
 }
 
 #### generate uis based on manager files
@@ -155,7 +157,7 @@ for (sample in sample_list[,1]) {
         
         
       }
-
+      
       # create input menus
       
       for (type in c("exact", "range")) {
@@ -230,7 +232,7 @@ rm(elements)
 for (dims in names(menuBank[["functionList"]])) {
   source(menuBank[["functionList"]][[dims]][["code"]])
   menuBank[["functionList"]][[dims]][["args"]] <- names(unlist(formals(dims), 
-                                                              recursive = TRUE))
+                                                               recursive = TRUE))
 }
 
 rm(dims)
@@ -244,28 +246,48 @@ rm(ofunctions)
 qed_data <- list()
 
 for (f in list.files("Data")) {
- data <- data.frame(read_csv(paste0("Data/",f))) %>% 
-                      #filter(private == 0) %>% 
-                      mutate(south = region == 3, 
-                             west = region == 4) %>%
-                      select(-private) %>% select(-region) %>% select(-female)
- compare_schools <- unique(data[which(data$treat == 0),"school"])
- 
- treat_schools_urban <- sample(unique(data[which(data$treat == 1 & data$urban == 1),"school"]), 7, replace = FALSE)
- treat_schools_noturban <- sample(unique(data[which(data$treat == 1 & data$urban == 0),"school"]), 3, replace = FALSE)
- 
-  qed_data[[sub(".csv","",f)]] <- data %>% filter(school %in% c(treat_schools_urban,treat_schools_noturban,compare_schools)) %>% data.frame()
+  data <- data.frame(read_csv(paste0("Data/",f))) %>% 
+    mutate(west = region == 4) %>%
+    select(-region) %>% 
+    select(-female)
+  compare_schools <- unique(data[which(data$treat == 0),"school"])
+  
+  treat_schools_a <- sample(unique(data[which(data$treat == 1 & data$urban == 1),"school"]), 2, replace = FALSE)
+  treat_schools_b <- sample(unique(data[which(data$treat == 1 & data$urban == 0),"school"]), 4, replace = FALSE)
+  treat_schools_c <- sample(unique(data[which(data$treat == 1 & data$west == 1),"school"]), 2, replace = FALSE)
+  treat_schools_d <- sample(unique(data[which(data$treat == 1 & data$west == 0),"school"]), 4, replace = FALSE)
+  treat_schools_e <- sample(unique(data[which(data$treat == 1 & data$private == 0),"school"]), 2, replace = FALSE)
+  treat_schools_f <- sample(unique(data[which(data$treat == 1 & data$private == 1),"school"]), 2, replace = FALSE)
+  
+  treat_schools <- unique(c(treat_schools_a, 
+                          treat_schools_b, 
+                          treat_schools_c, 
+                          treat_schools_d,
+                          treat_schools_e,
+                          treat_schools_f))
+  
+  print(table(data$school, data$treat))
+  
+  qed_data[[sub(".csv","",f)]] <- data %>% 
+    filter(school %in% c(treat_schools,compare_schools)) %>% 
+    data.frame()
 }
 rm(f)
 rm(data)
 rm(compare_schools)
-rm(treat_schools_urban)
-rm(treat_schools_noturban)
+rm(treat_schools_a) 
+rm(treat_schools_b)
+rm(treat_schools_c) 
+rm(treat_schools_d)
+rm(treat_schools_e)
+rm(treat_schools_f)
+rm(treat_schools)
 
-qed_vars <- c("nonwhite","ses","pretest", "south","west","urban")
+qed_vars <- c("nonwhite","ses","pretest", "private","west","urban")
 
 save.image("Planner/appData.RData")
 
 #write.csv(cbind(names(menuBank[["functionList"]])), "functions.csv")
+
 
 
