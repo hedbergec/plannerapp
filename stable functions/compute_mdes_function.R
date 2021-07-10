@@ -3,7 +3,8 @@ compute_mdes <- function( #function to iteratively find MDES, returns exact resu
   df, #degrees of freedom
   alpha = .05, #alpha
   tails = 2, #tails, default is 2
-  beta = .2 #type ii error, default is .2
+  beta = .2, #type ii error, default is .2
+  give_exact = FALSE #should exact power be given? (renders ourput a list)
 ) {
   
   starter_es <- ( #typical approx
@@ -45,12 +46,19 @@ compute_mdes <- function( #function to iteratively find MDES, returns exact resu
                      pt(-qt(alpha/tails,df, lower.tail = FALSE),df,ncp_next))
   }
   
-  return( #return restults
-    list(
-      #starter_es = starter_es,
-      #starter_power = compute_power(beta_start),
-      mdes = mdes,
-      exact_power = 1-beta_check
+  if (give_exact) { #should exact power be given?
+    return( #return results
+      c(
+        #starter_es = starter_es,
+        #starter_power = compute_power(beta_start),
+        mdes = mdes,
+        exact_power = 1-beta_check
+      )
     )
-  )
+  }
+  else {
+    return(mdes)
+  }
+  
+  
 }

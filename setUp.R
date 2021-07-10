@@ -4,14 +4,22 @@
 #### saves environment for app
 #### git push --set-upstream plannerapp master
 
+# steppcenter@northwestern.edu
+# pword:  Stepp.center
+
+#https://canvas.northwestern.edu/courses/135809
+#NetID: ehr6170 
+
 rm(list = ls()) #clean slate
-system("rm -R auto functions")
+system('rm -R "./auto functions/"')
 dir.create("auto functions")
 
 library(readxl)
+library(readr)
 library(tidyverse)
 library(shiny)
 library(plotly)
+library(data.table)
 
 #### Read in manager specs from xls file
 
@@ -230,6 +238,21 @@ for (ofunctions in list.files("stable functions/")) {
 }
 
 rm(ofunctions)
+
+qed_data <- list()
+
+set.seed(101)
+
+for (f in list.files("Data")) {
+ data <- data.frame(read_csv(paste0("Data/",f)))[,-c(9,8)] 
+ treat_schools <- sample(unique(data[which(data$treat == 1),"school"]), 10, replace = FALSE)
+ compare_schools <- unique(data[which(data$treat == 0),"school"])
+  qed_data[[sub(".csv","",f)]] <- data %>% filter(school %in% c(treat_schools,compare_schools)) %>% data.frame()
+}
+rm(f)
+rm(data)
+rm(compare_schools)
+rm(treat_schools)
 
 save.image("Planner/appData.RData")
 

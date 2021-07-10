@@ -1,6 +1,8 @@
 library(shiny)
 library(plotly)
 library(tidyverse)
+library(data.table)
+
 
 #options(error= recover)
 
@@ -8,38 +10,9 @@ server <- function(input, output) {
   
   load("appData.RData")
   
-  output$effectsizeSlider <- renderUI({
-    sliderInput("es",
-                "Select expected effect size", 
-                value = .3,
-                min = .05, 
-                max = 1.5, 
-                step = .01)
-  })
   
-  output$type2ErrorSlider <- renderUI({
-    sliderInput("beta",
-                "Select expected Type II Error", 
-                value = .2,
-                min = .01, 
-                max = .5, 
-                step = .01)
-  })
   
-  output$alphaMenu <- renderUI({
-    selectInput("alpha",
-                "Signifiance Level",
-                choices = c(".1" = .1, 
-                            ".05" = .05, 
-                            ".01" = .01, 
-                            ".001" = .001),
-                selected = .05)
-  })
   
-  alpha <- reactive({
-    req(input$alpha)
-    return(as.numeric(input$alpha))
-  })
   
   # output$tailsMenu <- renderUI({
   #     selectInput("tails",
@@ -112,15 +85,58 @@ server <- function(input, output) {
     }
   })
   
-  output$powerSlider <- renderUI({
-    sliderInput("power",
-                "Select level of power", 
-                min = .2, 
+  #### POWER and MDES ####
+  
+  output$effectsizeSlider <- renderUI({
+    req(input$design)
+    req(input$design != "waiting")
+    req(input$inference)
+    req(input$inference != "waiting")
+    req(input$model)
+    req(input$model != "waiting")
+    sliderInput("es",
+                "Select expected effect size", 
+                value = .3,
+                min = .05, 
+                max = 1.5, 
+                step = .01)
+  })
+  
+  output$starterPowerSlider <- renderUI({
+    req(input$design)
+    req(input$design != "waiting")
+    req(input$inference)
+    req(input$inference != "waiting")
+    req(input$model)
+    req(input$model != "waiting")
+    sliderInput("starterpower",
+                "Select desired power", 
+                value = .8,
+                min = .5, 
                 max = .99, 
                 step = .01)
   })
   
+  output$alphaMenu <- renderUI({
+    req(input$design)
+    req(input$design != "waiting")
+    req(input$inference)
+    req(input$inference != "waiting")
+    req(input$model)
+    req(input$model != "waiting")
+    selectInput("alpha",
+                "Signifiance Level",
+                choices = c(".1" = .1, 
+                            ".05" = .05, 
+                            ".01" = .01, 
+                            ".001" = .001),
+                selected = .05)
+  })
   
+  alpha <- reactive({
+    req(input$alpha)
+    return(as.numeric(input$alpha))
+  })
   
   N <- reactive({
     req(input$design)
@@ -306,65 +322,351 @@ server <- function(input, output) {
     return(p)
   })
   
-  output$mdesoutput <- renderPrint({
+  exact_mdes <- reactive({
     req(V()$value)
     req(df()$value)
     req(alpha())
     req(tails())
-    req(input$beta)
+    req(input$starterpower)
     compute_mdes(
       V = V()$value, 
       df = df()$value, 
       alpha = alpha(), 
       tails = tails(), 
-      beta = input$beta
+      beta = 1-input$starterpower
     )
   })
+  
+  output$exact_mdes_report <- renderUI({
+    req(V()$value)
+    req(df()$value)
+    req(alpha())
+    req(tails())
+    req(input$starterpower)
+    text_make <- paste0("The minimum detectable effect size for this design is ",
+                        round(exact_mdes(), digits = 2),
+                        " standard deviations.")
+    h4(text_make)
+  })
+  
+  #### QED MATCHING ####
+  
+  output$qedScenarioMenu <- renderUI({
+    selectInput("qedScenario",
+                "Pick the Selection Scenario",
+                choices = c(
+                  "make choice/reset" = "waiting",
+                  "Random Selection of Schools to treatment" = "between_random",
+                  "Matching on school characteristics" = "between_biased_school",
+                  "Matching on school averages of student characteristics" = "between_biased_student",
+                  "Matching on school characteristics and averages of student characteristics" = "between_biased_school_student"
+                )
+    )
+    
+  })
+  
+
+  output$selectionTitle <- renderUI({
+    req(input$qedScenario != "waiting")
+    h3("Select Schools")
+  })
+  
+  qedData <- reactive({
+    req(input$qedScenario != "waiting")
+    data <- qed_data[[input$qedScenario]] %>% select(-posttest) %>% data.frame()
+    return(data)
+  })
+  
+  qedData_stats <- reactive({
+    req(qedData())
+    data <- list(
+      treatment = qedData() %>% 
+        filter(treat == 1) %>% 
+        select(-treat) %>%
+        group_by(school) %>%
+        mutate(N = n()) %>%
+        summarise_all(c("mean","sd")) %>%
+        mutate(N = N_mean) %>%
+        select(-c(N_mean, N_sd)) %>%
+        relocate(c(school,N)) %>%
+        data.frame() %>% round(digits = 2) ,
+      comparison = qedData() %>% 
+        filter(treat == 0) %>% 
+        select(-treat) %>%
+        group_by(school) %>%
+        mutate(N = n()) %>%
+        summarise_all(c("mean","sd")) %>%
+        mutate(N = N_mean) %>%
+        select(-c(N_mean, N_sd)) %>%
+        relocate(c(school,N)) %>%
+        data.frame() %>% round(digits = 2) 
+    )
+    return(data)
+  })
+  
+  output$qedTableTreat <- renderDataTable({
+    req(qedData_stats())
+    qedData_stats()$treatment %>% 
+      select(-ends_with("_sd")) %>% 
+      rename_with(~gsub("_mean","",.x))
+  },options = list(
+    columnDefs = list(list(className = 'dt-center', targets = 5)),
+    pageLength = 10,
+    lengthMenu = c(10, 15, 20, 50, 100)
+  )
+  )
+  
+  output$qedTableTreatUI <- renderUI({
+    req(qedData_stats())
+    dataTableOutput("qedTableTreat")
+  })
+  
+  
+  output$qedTableTreatTitle <- renderUI({
+    req(qedData_stats())
+    h3("Treatment Schools")
+  })
+  
+  output$qedTableCompare <- renderDataTable({
+    req(qedData_stats())
+    qedData_stats()$comparison %>% 
+      select(-ends_with("_sd")) %>% 
+      rename_with(~gsub("_mean","",.x))
+  }, options = list(
+    columnDefs = list(list(className = 'dt-center', targets = 5)),
+    pageLength = 5,
+    lengthMenu = c(5, 10, 15, 20, 50, 100)
+  )
+  )
+  
+  output$qedTableCompareUI <- renderUI({
+    req(qedData_stats())
+    dataTableOutput("qedTableCompare")
+  })
+  
+  
+  output$qedTableCompareTitle <- renderUI({
+    req(qedData_stats())
+    h3("Comparison Schools")
+  })
+  
+  output$qedDescribeTitle <- renderUI({
+    req(qedData_stats())
+    h3("All Descriptive Data")
+  })
+  
+  
+  output$treatPick <- renderUI({
+    req(qedData_stats())
+    selectizeInput("treatpicked", 
+                   "Select treatment schools",
+                   choices = qedData_stats()[["treatment"]]$school,
+                   select = qedData_stats()[["treatment"]]$school,
+                   options = list(minItems = 10),
+                   multiple = TRUE)
+    
+  })
+  
+  output$comparePick <- renderUI({
+    req(qedData_stats())
+    selectizeInput("comparepicked", 
+                   "Select comparison schools",
+                   choices = qedData_stats()[["comparison"]]$school,
+                   select = qedData_stats()[["comparison"]]$school[1:3],
+                   options = list(minItems = 2),
+                   multiple = TRUE)
+  })
+  
+
+  qed_made_data <- reactive({
+    req(input$treatpicked)
+    req(input$comparepicked)
+    data <- rbind(
+      qedData() %>% filter(school %in% input$treatpicked) %>% mutate(treat = 1) %>% data.frame(),
+      qedData() %>% filter(school %in% input$comparepicked) %>% mutate(treat = 0) %>% data.frame()
+    )
+    return(data)
+  })
+  
+
+  sumstats <- reactive({
+    req(qed_made_data())
+    sumstats <- qed_made_data() %>% 
+      select(-school) %>%
+      group_by(treat) %>% 
+      mutate(n = n()) %>%
+      summarise_all(c("mean", "sd"), na.rm = TRUE) %>%
+      ungroup() %>%
+      mutate(n = n_mean) %>%
+      select(-c(n_mean, n_sd)) %>%
+      relocate(c(treat, n)) %>%
+      data.frame()
+    
+    return(sumstats)
+    
+  })
+  
+  balancestats <- reactive({
+    req(sumstats()) 
+    results<- list()
+    for (v in c("female","nonwhite","ses","pretest", "urban")) {
+      n_c <- sumstats()[1,"n"]
+      n_i <- sumstats()[2,"n"]
+      sd_c <- sumstats()[1,paste0(v,"_sd")]
+      sd_i <- sumstats()[2,paste0(v,"_sd")]
+      m_c <- sumstats()[1,paste0(v,"_mean")]
+      m_i <- sumstats()[2,paste0(v,"_mean")]
+
+      if (v == "pretest") {
+        results[[v]] <- (1-(3/(4*(n_i+n_c)-9)))*((m_i-m_c)/(sqrt((sd_c^2*(n_c-1)+sd_i^2*(n_i-1))/(n_c+n_i-2)))
+        )
+      }
+      else {
+        results[[v]] <- (1-(3/(4*(n_i+n_c)-9)))*log((m_i*(1-m_c))/(m_c*(1-m_i)))/1.65
+      }
+      
+      
+      
+    }
+    return(do.call(data.frame,results))
+    
+  })
+  
+  output$sum_stats_table <- renderTable({
+    req(sumstats())
+    sumstats()
+    
+  }, options = list(
+    columnDefs = list(list(className = 'dt-center', targets = 5)),
+    pageLength = 5,
+    lengthMenu = c(5, 10, 15, 20)
+  )
+  )
+  
+  output$sum_stats_tableUI <- renderUI({
+    req(sumstats())
+    tableOutput("sum_stats_table")
+    
+  })
+  
+  output$sum_stats_tableTitle <- renderUI({
+    req(sumstats())
+    h3("Summary Statistics between Selected Treatment and Control")
+    
+  })
+  
+  output$balance_stats_table <- renderTable({
+    req(balancestats())
+    balancestats()
+    
+    
+  }, options = list(
+    columnDefs = list(list(className = 'dt-center', targets = 5)),
+    pageLength = 5,
+    lengthMenu = c(5, 10, 15, 20)
+  )
+  )
+  
+  output$balance_stats_tableUI <- renderUI({
+    req(balancestats())
+    tableOutput("balance_stats_table")
+    
+  })
+  
+  output$balance_stats_tableTitle <- renderUI({
+    req(balancestats())
+    h3("Balance Statistics between Treatment and Control")
+    
+  })
+  
+  
+  # make new data from selections, get list of vars, run g and cox on students, Mahalanobis Distance of school means, colored by treatment
+  #
+  # D2 <- mahalanobis(qed_data$between_random, colMeans(qed_data$between_random), cov(qed_data$between_random))
+  # D2 <- mahalanobis(qed_data$between_random, colMeans(qed_data$between_random[which(qed_data$between_random$treat == 1),]), cov(qed_data$between_random))
+  # plot(density(D2))
 }
+
+
+#### UI #####
 
 ui <- fluidPage(
   
   # Application title
-  titlePanel("Planner BETA"),
-  
-  # Sidebar 
-  sidebarLayout(
-    sidebarPanel(
-      uiOutput("sampleMenu"),
-      uiOutput("designMenu"),
-      uiOutput("inferenceMenu"),
-      uiOutput("modelMenu"),
-      uiOutput("input_set"),
-      uiOutput("alphaMenu"),
-      uiOutput("tailsMenu")
-    ),
-    
-    # Show 
-    mainPanel(
-      tabsetPanel(
-        tabPanel("Power",
-                 uiOutput("effectsizeSlider"),
-                 fluidRow(
-                   h1("Exact"),
-                   plotlyOutput("power_graph_plotly")
-                 ),
-                 fluidRow(
-                   h1("Range TDB")
-                 )
+  titlePanel(
+    "Planner BETA"
+  ),
+  tabsetPanel(
+    tabPanel(
+      "Power and MDES", 
+      fluid = TRUE,
+      sidebarLayout(
+        sidebarPanel(
+          uiOutput("sampleMenu"),
+          uiOutput("designMenu"),
+          uiOutput("inferenceMenu"),
+          uiOutput("modelMenu"),
+          uiOutput("input_set"),
+          uiOutput("alphaMenu"),
+          uiOutput("tailsMenu")
         ),
-        tabPanel("MDES",
-                 fluidRow(
-                   h1("Exact"),
-                   uiOutput("type2ErrorSlider"),
-                   verbatimTextOutput("mdesoutput")
-                 ),
-                 fluidRow(
-                   h1("Range TBA")
-                 )
+        
+        # Show 
+        mainPanel(
+          tabsetPanel(
+            tabPanel(
+              "MDES",
+              fluidRow(
+                uiOutput("starterPowerSlider"),
+                uiOutput("exact_mdes_report")
+              )
+            ),
+            tabPanel(
+              "Power",
+              uiOutput("effectsizeSlider"),
+              fluidRow(
+                plotlyOutput("power_graph_plotly")
+              )
+            )
+          )
+        )
+      )
+     ),
+    tabPanel(
+      "QED Selection",
+      fluid = TRUE,
+      sidebarLayout(
+        sidebarPanel(
+          uiOutput("qedScenarioMenu"),
+          uiOutput("selectionTitle"),
+          uiOutput("treatPick"),
+          uiOutput("comparePick"),
+          uiOutput("balance_stats_tableTitle"),
+          uiOutput("balance_stats_tableUI"),
+        ),
+        mainPanel(
+          tabsetPanel(
+            tabPanel(
+              "Create a balanced data set",
+              fluidRow(
+                uiOutput("sum_stats_tableTitle"),
+                uiOutput("sum_stats_tableUI")
+                
+              ),
+              fluidRow(
+                uiOutput("qedDescribeTitle"),
+                uiOutput("qedTableTreatTitle"),
+                uiOutput("qedTableTreatUI"),
+                uiOutput("qedTableCompareTitle"),
+                uiOutput("qedTableCompareUI")
+              )
+            )
+          )
         )
       )
     )
   )
+  
 )
 
 # Run the application 

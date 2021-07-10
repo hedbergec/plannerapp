@@ -1,3 +1,6 @@
 system("mkdir ~/shinyapps/nsfworkshop")
 system("cp Planner/app.R ~/shinyapps/nsfworkshop/app.R")
 system("cp Planner/appData.RData ~/shinyapps/nsfworkshop/appData.RData")
+system("git add -A")
+system('git commit -am "comment"')
+system("git push")

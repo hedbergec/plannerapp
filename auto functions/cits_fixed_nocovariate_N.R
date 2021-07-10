@@ -5,7 +5,6 @@ cits_fixed_nocovariate_N <- function(
 	pretime,
 	posttime
 	){
-		N <- (mt+mc)*(pretime+posttime)
-	return(N)
+		return(NULL)
 }
 

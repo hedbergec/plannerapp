@@ -4,7 +4,6 @@ its_fixed_nocovariate_N <- function(
 	pretime,
 	posttime
 	){
-		N <- m*(pretime+posttime)
-	return(N)
+		return(NULL)
 }
 
