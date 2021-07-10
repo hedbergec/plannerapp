@@ -10,6 +10,8 @@
 #https://canvas.northwestern.edu/courses/135809
 #NetID: ehr6170 
 
+set.seed(123)
+
 rm(list = ls()) #clean slate
 system('rm -R "./auto functions/"')
 dir.create("auto functions")
@@ -241,18 +243,26 @@ rm(ofunctions)
 
 qed_data <- list()
 
-set.seed(101)
-
 for (f in list.files("Data")) {
- data <- data.frame(read_csv(paste0("Data/",f)))[,-c(9,8)] 
- treat_schools <- sample(unique(data[which(data$treat == 1),"school"]), 10, replace = FALSE)
+ data <- data.frame(read_csv(paste0("Data/",f))) %>% 
+                      #filter(private == 0) %>% 
+                      mutate(south = region == 3, 
+                             west = region == 4) %>%
+                      select(-private) %>% select(-region) %>% select(-female)
  compare_schools <- unique(data[which(data$treat == 0),"school"])
-  qed_data[[sub(".csv","",f)]] <- data %>% filter(school %in% c(treat_schools,compare_schools)) %>% data.frame()
+ 
+ treat_schools_urban <- sample(unique(data[which(data$treat == 1 & data$urban == 1),"school"]), 7, replace = FALSE)
+ treat_schools_noturban <- sample(unique(data[which(data$treat == 1 & data$urban == 0),"school"]), 3, replace = FALSE)
+ 
+  qed_data[[sub(".csv","",f)]] <- data %>% filter(school %in% c(treat_schools_urban,treat_schools_noturban,compare_schools)) %>% data.frame()
 }
 rm(f)
 rm(data)
 rm(compare_schools)
-rm(treat_schools)
+rm(treat_schools_urban)
+rm(treat_schools_noturban)
+
+qed_vars <- c("nonwhite","ses","pretest", "south","west","urban")
 
 save.image("Planner/appData.RData")
 

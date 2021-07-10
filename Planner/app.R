@@ -3,30 +3,12 @@ library(plotly)
 library(tidyverse)
 library(data.table)
 
-
-#options(error= recover)
-
 server <- function(input, output) {
   
   load("appData.RData")
   
   
-  
-  
-  
-  # output$tailsMenu <- renderUI({
-  #     selectInput("tails",
-  #                 "One or Two Tails",
-  #                 choices = c("one-tail" = 1, 
-  #                             "two-tails" = 2),
-  #                 selected = 2)
-  # })
-  
-  tails <- reactive({
-    # req(input$tails)
-    # return(as.numeric(input$tails))
-    return(2)
-  })
+  #### AUTO Generated Menus ####
   
   output$sampleMenu <- renderUI({
     menuBank$sampleMenu
@@ -85,7 +67,11 @@ server <- function(input, output) {
     }
   })
   
-  #### POWER and MDES ####
+  #### POWER, MDES, alpha sliders ####
+  
+  tails <- reactive({
+    return(2)
+  })
   
   output$effectsizeSlider <- renderUI({
     req(input$design)
@@ -138,6 +124,9 @@ server <- function(input, output) {
     return(as.numeric(input$alpha))
   })
   
+  
+  #### N ####
+  
   N <- reactive({
     req(input$design)
     req(input$design != "waiting")
@@ -173,6 +162,8 @@ server <- function(input, output) {
     
   })
   
+  #### df ####
+  
   df <- reactive({
     req(input$design)
     req(input$design != "waiting")
@@ -203,6 +194,8 @@ server <- function(input, output) {
       )
     )
   })
+  
+  #### V factor ####
   
   V <- reactive({
     req(input$design)
@@ -238,6 +231,9 @@ server <- function(input, output) {
     )
   })
   
+  
+  #### NCP ####
+  
   ncp <- reactive({
     req(input$design)
     req(input$design != "waiting")
@@ -259,6 +255,8 @@ server <- function(input, output) {
       )
     )
   })
+  
+  #### beta ####
   
   beta <- reactive({
     req(input$design)
@@ -286,6 +284,8 @@ server <- function(input, output) {
     )
     
   })
+  
+  #### power ####
   
   power <- reactive({
     req(input$design)
@@ -322,6 +322,9 @@ server <- function(input, output) {
     return(p)
   })
   
+  
+  #### mdes ####
+  
   exact_mdes <- reactive({
     req(V()$value)
     req(df()$value)
@@ -337,14 +340,29 @@ server <- function(input, output) {
     )
   })
   
+  output$mdes_round <- renderUI({
+    req(V()$value)
+    req(df()$value)
+    req(alpha())
+    req(tails())
+    req(input$starterpower)
+    numericInput("mdesdigits", "digits for mdes", value = 2)
+  })
+  
   output$exact_mdes_report <- renderUI({
     req(V()$value)
     req(df()$value)
     req(alpha())
     req(tails())
     req(input$starterpower)
+    if (is.null(input$mdesdigits)) {
+      digits <- 2
+    }
+    else {
+      digits <- input$mdesdigits
+    }
     text_make <- paste0("The minimum detectable effect size for this design is ",
-                        round(exact_mdes(), digits = 2),
+                        round(exact_mdes(), digits = digits),
                         " standard deviations.")
     h4(text_make)
   })
@@ -371,42 +389,36 @@ server <- function(input, output) {
     h3("Select Schools")
   })
   
+  
+  
+  
   qedData <- reactive({
     req(input$qedScenario != "waiting")
     data <- qed_data[[input$qedScenario]] %>% select(-posttest) %>% data.frame()
     return(data)
   })
   
-  qedData_stats <- reactive({
+  #### QED Treatment Stats
+  
+  
+  qedData_stats_treat <- reactive({
     req(qedData())
-    data <- list(
-      treatment = qedData() %>% 
-        filter(treat == 1) %>% 
-        select(-treat) %>%
-        group_by(school) %>%
-        mutate(N = n()) %>%
-        summarise_all(c("mean","sd")) %>%
-        mutate(N = N_mean) %>%
-        select(-c(N_mean, N_sd)) %>%
-        relocate(c(school,N)) %>%
-        data.frame() %>% round(digits = 2) ,
-      comparison = qedData() %>% 
-        filter(treat == 0) %>% 
-        select(-treat) %>%
-        group_by(school) %>%
-        mutate(N = n()) %>%
-        summarise_all(c("mean","sd")) %>%
-        mutate(N = N_mean) %>%
-        select(-c(N_mean, N_sd)) %>%
-        relocate(c(school,N)) %>%
-        data.frame() %>% round(digits = 2) 
-    )
+    data <- qedData() %>% 
+      filter(treat == 1) %>% 
+      select(-treat) %>%
+      group_by(school) %>%
+      mutate(N = n()) %>%
+      summarise_all(c("mean","sd")) %>%
+      mutate(N = N_mean) %>%
+      select(-c(N_mean, N_sd)) %>%
+      relocate(c(school,N)) %>%
+      data.frame() %>% round(digits = 2)
     return(data)
   })
   
   output$qedTableTreat <- renderDataTable({
-    req(qedData_stats())
-    qedData_stats()$treatment %>% 
+    req(qedData_stats_treat())
+    qedData_stats_treat() %>% 
       select(-ends_with("_sd")) %>% 
       rename_with(~gsub("_mean","",.x))
   },options = list(
@@ -417,19 +429,95 @@ server <- function(input, output) {
   )
   
   output$qedTableTreatUI <- renderUI({
-    req(qedData_stats())
+    req(qedData_stats_treat())
     dataTableOutput("qedTableTreat")
   })
   
   
   output$qedTableTreatTitle <- renderUI({
-    req(qedData_stats())
+    req(qedData_stats_treat())
     h3("Treatment Schools")
   })
   
+  #### QED Treatment PICK ####
+  
+  output$treatPick <- renderUI({
+    req(qedData_stats_treat())
+    selectizeInput("treatpicked", 
+                   "Select treatment schools",
+                   choices = qedData_stats_treat()$school,
+                   select = qedData_stats_treat()$school,
+                   options = list(minItems = length(qedData_stats_treat()$school)),
+                   multiple = TRUE)
+    
+  })
+  
+  
+  #### QED Picked Treatment M and S for M-D ####
+  
+  qed_mahalanobis_center <- reactive({
+    req(input$treatpicked)
+    center_vector <- qedData() %>% 
+      filter(school %in% input$treatpicked) %>% 
+      select(-contains(c("school","treat"))) %>% 
+      summarise_all(mean) %>%
+      as.matrix()
+ 
+    
+  })
+  
+  qed_mahalanobis_Sigma <- reactive({
+    req(input$treatpicked)
+    
+    Sigma <- qedData() %>% 
+      filter(school %in% input$treatpicked) %>% 
+      select(-contains(c("school","treat"))) %>% 
+      data.frame() %>%
+      cov()
+    
+    
+    
+  })
+  
+  
+  #### QED Compare Stats ####
+  
+  qedData_stats_compare <- reactive({
+    req(qedData())
+    req(qed_mahalanobis_center())
+    req(qed_mahalanobis_Sigma())
+    data <- qedData() %>% 
+      filter(treat == 0) %>% 
+      select(-treat) %>%
+      group_by(school) %>%
+      mutate(N = n()) %>%
+      summarise_all(c("mean","sd")) %>%
+      mutate(N = N_mean) %>%
+      select(-c(N_mean, N_sd)) %>%
+      relocate(c(school,N)) %>%
+      data.frame() 
+
+    data$Sqrt_MahalanobisD <- qedData() %>% 
+      filter(treat == 0) %>% 
+      select(-treat) %>%
+      group_by(school) %>%
+      summarise_all(mean) %>%
+      ungroup() %>%
+      select(-contains(c("school","treat"))) %>%
+      mahalanobis(center = qed_mahalanobis_center(), 
+                  cov = qed_mahalanobis_Sigma()) %>%
+      as.matrix() %>% sqrt()
+    
+    data <- data %>% 
+      relocate(c(school, N, Sqrt_MahalanobisD)) %>% 
+      data.frame() %>% round(digits = 2) 
+
+    return(data)
+  })
+  
   output$qedTableCompare <- renderDataTable({
-    req(qedData_stats())
-    qedData_stats()$comparison %>% 
+    req(qedData_stats_compare())
+    qedData_stats_compare() %>% 
       select(-ends_with("_sd")) %>% 
       rename_with(~gsub("_mean","",.x))
   }, options = list(
@@ -440,44 +528,34 @@ server <- function(input, output) {
   )
   
   output$qedTableCompareUI <- renderUI({
-    req(qedData_stats())
+    req(qedData_stats_compare())
     dataTableOutput("qedTableCompare")
   })
   
   
   output$qedTableCompareTitle <- renderUI({
-    req(qedData_stats())
+    req(qedData_stats_compare())
     h3("Comparison Schools")
   })
   
   output$qedDescribeTitle <- renderUI({
-    req(qedData_stats())
+    req(qedData_stats_compare())
     h3("All Descriptive Data")
   })
   
   
-  output$treatPick <- renderUI({
-    req(qedData_stats())
-    selectizeInput("treatpicked", 
-                   "Select treatment schools",
-                   choices = qedData_stats()[["treatment"]]$school,
-                   select = qedData_stats()[["treatment"]]$school,
-                   options = list(minItems = 10),
-                   multiple = TRUE)
-    
-  })
+  #### QED Compare Pick ####
   
   output$comparePick <- renderUI({
-    req(qedData_stats())
+    req(qedData_stats_compare())
     selectizeInput("comparepicked", 
                    "Select comparison schools",
-                   choices = qedData_stats()[["comparison"]]$school,
-                   select = qedData_stats()[["comparison"]]$school[1:3],
+                   choices = qedData_stats_compare()$school,
+                   select = sample(qedData_stats_compare()$school,10),
                    options = list(minItems = 2),
                    multiple = TRUE)
   })
   
-
   qed_made_data <- reactive({
     req(input$treatpicked)
     req(input$comparepicked)
@@ -509,7 +587,7 @@ server <- function(input, output) {
   balancestats <- reactive({
     req(sumstats()) 
     results<- list()
-    for (v in c("female","nonwhite","ses","pretest", "urban")) {
+    for (v in qed_vars) {
       n_c <- sumstats()[1,"n"]
       n_i <- sumstats()[2,"n"]
       sd_c <- sumstats()[1,paste0(v,"_sd")]
@@ -560,12 +638,7 @@ server <- function(input, output) {
     balancestats()
     
     
-  }, options = list(
-    columnDefs = list(list(className = 'dt-center', targets = 5)),
-    pageLength = 5,
-    lengthMenu = c(5, 10, 15, 20)
-  )
-  )
+  })
   
   output$balance_stats_tableUI <- renderUI({
     req(balancestats())
@@ -618,7 +691,8 @@ ui <- fluidPage(
               "MDES",
               fluidRow(
                 uiOutput("starterPowerSlider"),
-                uiOutput("exact_mdes_report")
+                uiOutput("exact_mdes_report"),
+                uiOutput("mdes_round")
               )
             ),
             tabPanel(
@@ -640,9 +714,8 @@ ui <- fluidPage(
           uiOutput("qedScenarioMenu"),
           uiOutput("selectionTitle"),
           uiOutput("treatPick"),
-          uiOutput("comparePick"),
-          uiOutput("balance_stats_tableTitle"),
-          uiOutput("balance_stats_tableUI"),
+          uiOutput("comparePick")
+          
         ),
         mainPanel(
           tabsetPanel(
@@ -650,8 +723,10 @@ ui <- fluidPage(
               "Create a balanced data set",
               fluidRow(
                 uiOutput("sum_stats_tableTitle"),
-                uiOutput("sum_stats_tableUI")
-                
+                uiOutput("sum_stats_tableUI"),
+                uiOutput("balance_stats_tableTitle"),
+                uiOutput("balance_stats_tableUI")
+          
               ),
               fluidRow(
                 uiOutput("qedDescribeTitle"),
