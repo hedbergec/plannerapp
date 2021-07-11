@@ -342,12 +342,7 @@ server <- function(input, output) {
   })
   
   output$mdes_round <- renderUI({
-    req(V()$value)
-    req(df()$value)
-    req(alpha())
-    req(tails())
-    req(input$starterpower)
-    numericInput("mdesdigits", "digits for mdes", value = 2)
+    numericInput("mdesdigits", "digits for mdes", value = 2, step = 1)
   })
   
   output$exact_mdes_report <- renderUI({
@@ -364,7 +359,9 @@ server <- function(input, output) {
     }
     text_make <- paste0("The minimum detectable effect size for this design is ",
                         round(exact_mdes(), digits = digits),
-                        " standard deviations.")
+                        " standard deviations. The total sample size of this design is ",
+                        N()$value,
+                        ".")
     h4(text_make)
   })
   
@@ -718,7 +715,13 @@ ui <- fluidPage(
               fluidRow(
                 uiOutput("starterPowerSlider"),
                 uiOutput("exact_mdes_report"),
-                uiOutput("mdes_round")
+                tabsetPanel (
+                  tabPanel("Hide output controls"),
+                  tabPanel("Adjust output",
+                           uiOutput("mdes_round")
+                           )
+                )
+                
               )
             ),
             tabPanel(
