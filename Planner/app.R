@@ -2,6 +2,7 @@ library(shiny)
 library(plotly)
 library(tidyverse)
 library(data.table)
+library(shinythemes)
 
 server <- function(input, output) {
   
@@ -496,13 +497,13 @@ server <- function(input, output) {
       mutate(N = n()) %>%
       summarise_all(c("mean","sd")) %>%
       mutate(N = N_mean) %>%
-      mutate(Sqrt_MahalanobisD = sqrt(d_mean)) %>%
+      mutate(Mahalanobis_Distance = d_mean) %>%
       select(-c(N_mean, N_sd, d_mean, d_sd)) %>%
       relocate(c(school,N)) %>%
       data.frame() 
     
     data <- data %>% 
-      relocate(c(school, N, Sqrt_MahalanobisD)) %>% 
+      relocate(c(school, N, Mahalanobis_Distance)) %>% 
       data.frame() %>% round(digits = 2) 
     
     return(data)
@@ -596,7 +597,7 @@ server <- function(input, output) {
         results[[v]] <- (1-(3/(4*(n_i+n_c)-9)))*log((m_i*(1-m_c))/(m_c*(1-m_i)))/1.65
       }
       
-      results[["MD"]] <- qed_made_data() %>% 
+      results[["Mahalanobis_Distance"]] <- qed_made_data() %>% 
         filter(treat == 0) %>%
         select(-c(school,treat)) %>%
         data.frame() %>% 
@@ -606,13 +607,17 @@ server <- function(input, output) {
       
       
     }
-    return(do.call(data.frame,results))
+    result <- do.call(data.frame,results) %>% 
+      relocate(Mahalanobis_Distance) %>% data.frame()
+    return(result)
     
   })
   
   output$sum_stats_table <- renderTable({
     req(sumstats())
-    sumstats()
+    sumstats() %>%
+      select(-contains("_sd")) %>%
+      rename_with(~gsub("_mean","",.x))
     
   }, options = list(
     columnDefs = list(list(className = 'dt-center', targets = 5)),
@@ -629,7 +634,7 @@ server <- function(input, output) {
   
   output$sum_stats_tableTitle <- renderUI({
     req(sumstats())
-    h3("Summary Statistics between Selected Treatment and Control")
+    h3("Means across Students by Treatment and Control")
     
   })
   
@@ -652,6 +657,27 @@ server <- function(input, output) {
     
   })
   
+  output$explorepanels <- renderUI({
+    req(input$qedScenario != "waiting")
+    tabsetPanel(
+      tabPanel(
+        "Explore Comparison Schools",
+        fluidRow(
+          uiOutput("qedTableCompareTitle"),
+          uiOutput("qedTableCompareUI")
+        )
+      ),
+      tabPanel(
+        "Explore Treatment Schools",
+        fluidRow(
+          uiOutput("qedTableTreatTitle"),
+          uiOutput("qedTableTreatUI")
+        )
+      )
+      
+    )
+  })
+  
   
   # make new data from selections, get list of vars, run g and cox on students, Mahalanobis Distance of school means, colored by treatment
   #
@@ -664,7 +690,7 @@ server <- function(input, output) {
 #### UI #####
 
 ui <- fluidPage(
-  
+  theme = shinytheme("paper"),
   # Application title
   titlePanel(
     "Planner BETA"
@@ -709,39 +735,29 @@ ui <- fluidPage(
     tabPanel(
       "QED Selection",
       fluid = TRUE,
-      sidebarLayout(
-        sidebarPanel(
-          uiOutput("qedScenarioMenu"),
-          uiOutput("selectionTitle"),
-          uiOutput("treatPick"),
-          uiOutput("comparePick")
-          
-        ),
+      fluidPage(
+        uiOutput("qedScenarioMenu"),
         mainPanel(
-          tabsetPanel(
-            tabPanel(
-              "Create a balanced data set",
-              fluidRow(
-                uiOutput("sum_stats_tableTitle"),
-                uiOutput("sum_stats_tableUI"),
-                uiOutput("balance_stats_tableTitle"),
-                uiOutput("balance_stats_tableUI")
-                
-              ),
-              fluidRow(
-                uiOutput("qedDescribeTitle"),
-                uiOutput("qedTableTreatTitle"),
-                uiOutput("qedTableTreatUI"),
-                uiOutput("qedTableCompareTitle"),
-                uiOutput("qedTableCompareUI")
-              )
+          fluidRow(
+            uiOutput("balance_stats_tableTitle"),
+            uiOutput("balance_stats_tableUI"),
+            uiOutput("sum_stats_tableTitle"),
+            uiOutput("sum_stats_tableUI")
+          ),
+          fluidRow(
+            uiOutput("selectionTitle"),
+            column(6,
+                   uiOutput("comparePick")
+            ),
+            column(6,
+                   uiOutput("treatPick")
             )
-          )
+          ),
+          uiOutput("explorepanels")
         )
       )
     )
   )
-  
 )
 
 # Run the application 
