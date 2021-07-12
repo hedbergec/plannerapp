@@ -5,13 +5,13 @@ blocked_random_covariate_V <- function(
 	nc,
 	icc,
 	R2_1,
+	R2_2,
 	q,
-	Q2,
-	tau2
+	upsilon
 	){
-		iccbar <- 1-icc
-		nbar <- 2/(1/nt+1/nc)
-		V <- 1/(((1-R2_1)*iccbar+(1-Q2)*nbar*tau2*iccbar*(nc+nt))/(m*nc*nt))
+		p <- nt/(nt+nc)
+		n <- nt+nc
+		V <- m*n*p*(1-p)*(1/(1+(n*p*(1-p)*upsilon)*icc-(R2_1+(n*p*(1-p)*upsilon)*R2_2-R2_1)*icc))
 	return(V)
 }
 

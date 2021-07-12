@@ -5,8 +5,7 @@ blocked_fixed_covariate_df <- function(
 	nc,
 	q
 	){
-		N <- m*(nt+nc)
-		df <- N-2*m-q
+		df <- m*(nt+nc)-2-q
 	return(df)
 }
 

@@ -5,9 +5,9 @@ blocked_fixed_nocovariate_V <- function(
 	nc,
 	icc
 	){
-		iccbar <- 1-icc
-		nbar <- 2/(1/nt+1/nc)
-		V <- 1/((iccbar+nbar*iccbar*(nc+nt))/(m*nc*nt))
+		p <- nt/(nt+nc)
+		n <- nt+nc
+		V <- m*n*p*(1-p)*(1/(1-icc))
 	return(V)
 }
 

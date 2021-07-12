@@ -4,8 +4,7 @@ blocked_random_nocovariate_df <- function(
 	nt,
 	nc
 	){
-		nbar <- 2/(1/nt+1/nc)
-		df <- result <- nbar*m - 2
+		df <- m*(nt+nc)-2
 	return(df)
 }
 

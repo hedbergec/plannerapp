@@ -7,9 +7,9 @@ blocked_fixed_covariate_V <- function(
 	R2_1,
 	q
 	){
-		iccbar <- 1-icc
-		nbar <- 2/(1/nt+1/nc)
-		V <-1/(((1-R2_1)*iccbar+nbar*iccbar*(nc+nt))/(m*nc*nt))
+		p <- nt/(nt+nc)
+		n <- nt+nc
+		V <- m*n*p*(1-p)*(1/(1-icc-(R2_1-R2_1*icc)))
 	return(V)
 }
 

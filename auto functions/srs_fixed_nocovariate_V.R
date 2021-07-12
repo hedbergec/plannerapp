@@ -4,7 +4,8 @@ srs_fixed_nocovariate_V <- function(
 	nc
 	){
 		p <- nt/(nt+nc)
-		V <- (nt+nc)*p*(1-p)
+		n <- nt+nc
+		V <- n*p*(1-p)
 	return(V)
 }
 

@@ -6,7 +6,8 @@ srs_fixed_covariate_V <- function(
 	q
 	){
 		p <- nt/(nt+nc)
-		V <- (nt+nc)*p*(1-p)*(1/(1-R2_1))
+		n <- nt+nc
+		V <- n*p*(1-p)*(1/(1-R2_1))
 	return(V)
 }
 

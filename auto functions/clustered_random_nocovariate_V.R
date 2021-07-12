@@ -6,8 +6,8 @@ clustered_random_nocovariate_V <- function(
 	icc
 	){
 		p <- mt/(mt+mc)
-		de <- 1+(n-1)*icc
-		V <- 1/(de/(p*(1-p)*(mt+mc)*n))
+		m <- mt+mc
+		V <- m*n*p*(1-p)*(1/(1+(n-1)*icc))
 	return(V)
 }
 

@@ -4,11 +4,11 @@ blocked_random_nocovariate_V <- function(
 	nt,
 	nc,
 	icc,
-	tau2
+	upsilon
 	){
-		iccbar <- 1-icc
-		nbar <- 2/(1/nt+1/nc)
-		V <- 1/((iccbar+nbar*tau2*(nc+nt))/(m*nc*nt))
+		p <- nt/(nt+nc)
+		n <- nt+nc
+		V <- m*n*p*(1-p)*(1/(1+(n*p*(1-p)*upsilon)*icc))
 	return(V)
 }
 

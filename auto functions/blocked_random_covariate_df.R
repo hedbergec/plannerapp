@@ -5,8 +5,7 @@ blocked_random_covariate_df <- function(
 	nc,
 	q
 	){
-		nbar <- 2/(1/nt+1/nc)
-		df <- result <- nbar*m - 2 - q
+		df <- m*(nt+nc)-2-q
 	return(df)
 }
 

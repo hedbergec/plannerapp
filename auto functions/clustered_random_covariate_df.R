@@ -5,7 +5,7 @@ clustered_random_covariate_df <- function(
 	n,
 	q
 	){
-		mt + mc - 2 - q
+		df <- mt + mc - 2 - q
 	return(df)
 }
 

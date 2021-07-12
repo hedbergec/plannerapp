@@ -12,7 +12,7 @@
 
 set.seed(1701)
 
-source("support materials/makeQEDData.R")
+#source("support materials/makeQEDData.R")
 
 rm(list = ls()) #clean slate
 system('rm -R "./auto functions/"')
