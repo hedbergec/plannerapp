@@ -20,7 +20,7 @@ summ_stats <- list()
 # for (j in school_ids) {
 #   school_data[[j]] <- make_school(
 #     id = j,
-#     n = sample(2:4, 1)*theta_data[which(theta_data$sch == j),"n"], #2 to 4 times bigger than seed data
+#     n = sample(3:6, 1)*theta_data[which(theta_data$sch == j),"n"], #3 to 6 times bigger than seed data
 #     delta = .5,
 #     x_means = theta_data[which(theta_data$sch == j),
 #                          grep("stu_", var_names)],
@@ -47,7 +47,7 @@ summ_stats <- list()
 # for (j in school_ids) {
 #   school_data[[j]] <- make_school(
 #     id = j,
-#     n = sample(2:4, 1)*theta_data[which(theta_data$sch == j),"n"], #2 to 4 times bigger than seed data
+#     n = sample(3:6, 1)*theta_data[which(theta_data$sch == j),"n"], #3 to 6 times bigger than seed data
 #     delta = .5,
 #     x_means = theta_data[which(theta_data$sch == j),
 #                          grep("stu_", var_names)],
@@ -74,7 +74,7 @@ school_data <- list()
 for (j in school_ids) {
   school_data[[j]] <- make_school(
     id = j,
-    n = sample(2:4, 1)*theta_data[which(theta_data$sch == j),"n"], #2 to 4 times bigger than seed data
+    n = sample(3:6, 1)*theta_data[which(theta_data$sch == j),"n"], #3 to 6 times bigger than seed data
     delta = .5,
     x_means = theta_data[which(theta_data$sch == j),
                          grep("stu_", var_names)],
@@ -83,6 +83,7 @@ for (j in school_ids) {
       data.frame(),
     w_values =  theta_data[which(theta_data$sch == j),
                            grep("sch_", var_names)],
+    t_weights = c(cons = .05),
     cluster_t = TRUE
   )
 }
@@ -101,7 +102,7 @@ summ_stats$between_random <- summary(data_together)
 # for (j in school_ids) {
 #   school_data[[j]] <- make_school(
 #     id = j,
-#     n = sample(2:4, 1)*theta_data[which(theta_data$sch == j),"n"], #2 to 4 times bigger than seed data
+#     n = sample(3:6, 1)*theta_data[which(theta_data$sch == j),"n"], #3 to 6 times bigger than seed data
 #     delta = .5,
 #     x_means = theta_data[which(theta_data$sch == j),
 #                          grep("stu_", var_names)],
@@ -130,7 +131,7 @@ summ_stats$between_random <- summary(data_together)
 # for (j in school_ids) {
 #   school_data[[j]] <- make_school(
 #     id = j,
-#     n = sample(2:4, 1)*theta_data[which(theta_data$sch == j),"n"], #2 to 4 times bigger than seed data
+#     n = sample(3:6, 1)*theta_data[which(theta_data$sch == j),"n"], #3 to 6 times bigger than seed data
 #     delta = .5,
 #     x_means = theta_data[which(theta_data$sch == j),
 #                          grep("stu_", var_names)],
@@ -161,7 +162,7 @@ school_data <- list()
 for (j in school_ids) {
   school_data[[j]] <- make_school(
     id = j,
-    n = sample(2:4, 1)*theta_data[which(theta_data$sch == j),"n"], #2 to 4 times bigger than seed data
+    n = sample(3:6, 1)*theta_data[which(theta_data$sch == j),"n"], #3 to 6 times bigger than seed data
     delta = .5,
     x_means = theta_data[which(theta_data$sch == j),
                          grep("stu_", var_names)],
@@ -172,7 +173,7 @@ for (j in school_ids) {
                            grep("sch_", var_names)],
     t_weights = c(
                   sch_f_urb2 = .05,
-                  stu_c_base = .1, stu_f_ses = -.1,
+                  stu_c_base = .03, stu_f_ses = -.05,
                   stu_f_urm2 = -.05),
     cluster_t = TRUE
   )

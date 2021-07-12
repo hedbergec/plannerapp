@@ -1,9 +1,9 @@
-
+#https://github.com/daattali/colourpicker#colourinput-features
 exact_power_plotly <- function( #function to take results of exact_graph_data() and make plotly object
   exact_graph_data_obj, #exact_graph_data_obj object
   alphacol = 'rgba(0, 0, 0, 1)', #alpha default is black
-  betacol = 'rgba(168, 216, 234, .5)', #beta is blueish
-  powercol = 'rgba(100, 100, 234, .5)', #power is purpleish
+  betacol = 'rgba(25, 76, 76, .5)', #beta is blueish
+  powercol = 'rgba(76, 25, 34, .5)', #power is purpleish
   dotcol = 'rgba(80, 80, 80, .5)' #ncp dot is grayish
   ) {
   require(plotly) #make sure plotly is loaded

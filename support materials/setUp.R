@@ -10,7 +10,7 @@
 #https://canvas.northwestern.edu/courses/135809
 #NetID: ehr6170 
 
-set.seed(1701)
+set.seed(172)
 
 #source("support materials/makeQEDData.R")
 
@@ -169,7 +169,8 @@ for (sample in sample_list[,1]) {
                  !!sym(paste0("label_",design)), 
                  !!sym(paste0("ui_value_",type)),
                  min,
-                 max
+                 max,
+                 !!sym(paste0("ui_step_",type))
           ) %>%
           as.matrix() #creates 2 columns, the first is the inference id, the second its label
         if (nrow(input_list) >= 1) {
@@ -187,7 +188,8 @@ for (sample in sample_list[,1]) {
                       "label = '", input_list[j,2],"',",
                       "value = ", input_list[j,3],",",
                       "min = ", input_list[j,4], ",",
-                      "max = ", input_list[j,5], ")"
+                      "max = ", input_list[j,5], ",",
+                      "step = ", input_list[j,6],")"
                     )
                   )
                 )
@@ -211,7 +213,8 @@ for (sample in sample_list[,1]) {
                       "label = '", input_list[j,2],"',",
                       "value = ", input_list[j,3],",",
                       "min = ", input_list[j,4], ",",
-                      "max = ", input_list[j,5], ")"
+                      "max = ", input_list[j,5], ",",
+                      "step = ", input_list[j,6],")"
                     )
                   )
                 )
@@ -231,6 +234,7 @@ rm(elements)
 
 for (dims in names(menuBank[["functionList"]])) {
   source(menuBank[["functionList"]][[dims]][["code"]])
+  menuBank[["functionList"]][[dims]][["func"]] <- getAnywhere(dims)
   menuBank[["functionList"]][[dims]][["args"]] <- names(unlist(formals(dims), 
                                                                recursive = TRUE))
 }

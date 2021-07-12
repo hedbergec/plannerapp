@@ -232,7 +232,6 @@ server <- function(input, output) {
     )
   })
   
-  
   #### NCP ####
   
   ncp <- reactive({
@@ -384,9 +383,6 @@ server <- function(input, output) {
     req(input$qedScenario != "waiting")
     h3("Select Schools")
   })
-  
-  
-  
   
   qedData <- reactive({
     req(input$qedScenario != "waiting")
