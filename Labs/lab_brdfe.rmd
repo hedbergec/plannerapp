@@ -1,0 +1,139 @@
+---
+title: "Lab for randomized block control trial"
+subtitle: "Fixed Effects"
+author: "STEPP Center"
+output: word_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, include=TRUE) 
+load("../Planner/appData.Rdata")
+```
+
+# Case Study
+
+## **High School After-School Robotics Program**
+
+Dr. Carlos -- a computer scientist -- and his students have been running
+an after-school outreach program focused on robotics at a nearby high
+school in Atlanta. This high school predominately serves Black students
+-- which are underrepresented in computer science -- and the students
+come from both middle-class and low-SES families. In order to be
+admitted to the program, which is free, students had to apply and be
+recommended by a teacher. Once admitted, students in the program meet
+once a week for 2 hours for 16 weeks. During the lessons, they learn to
+program and build robots to complete tasks and, at the end of the
+program, they take part in a mini 'competition'. The research team has
+been excited to see how the students have responded to the program,
+including how this has affected their interest in computer science in
+general, as well as in studying a STEM related field in college.
+Teachers have reported that students in the program are more engaged in
+their science classes.
+
++---------+------------------------------------------------------------+
+| PICO    | Details                                                    |
++=========+============================================================+
+| Pop     | Black high school students interested in robotics in an    |
+| ulation | Atlanta public school.                                     |
++---------+------------------------------------------------------------+
+| Inter   | After-school robotics program, 16 weeks x 2 hours          |
+| vention |                                                            |
++---------+------------------------------------------------------------+
+| Com     | Unclear                                                    |
+| parison |                                                            |
++---------+------------------------------------------------------------+
+| Outcome | Belonging (in STEM), Science grades in school, interest in |
+|         | applying to college                                        |
++---------+------------------------------------------------------------+
+
+# Plausible Evaluation Design
+
+## Random Assignment Within Blocks (Schools): Fixed Effects
+
+Suppose researchers wish to evaluate the effectiveness of a similar
+program on student science grades in school. Researchers enroll students
+in the study during the the fall term. Students who are enrolled into
+the study are randomized within each school into either the treatment
+condition (the program) or a control condition (whatever they planned to
+do after school). Spring science scores on a state-mandated standardized
+test are used as the outcome. A set of schools are recruited for the
+study from a variety of districts through a professional development
+conference for state principals and district membership is not
+considered in the design. For planning purposes, researchers use a
+school-level intraclass correlation of .19 based on work by [Spybrook,
+Westine and Taylor
+(2016)](https://journals.sagepub.com/doi/10.1177/2332858415625975) (see
+Table 4).
+
+The analysis will employ a two-level hierarchical linear model (students
+nested within schools) with a random intercept (and possibly other
+parameters defined below) to compare the averages fo the treatment and
+control students. The treatment indicator varies at the student level.
+
+For simplicity, assume perfect compliance with random assignment and a
+perfect response rate.
+
+### Question 1
+
+Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
+find the minimum detectable effect for a randomized block study with
+fixed effects that employed 12 schools, in each of which 10 students are
+assigned to the treatment group and 20 students are assigned the control
+group when power is .8 for a test with a significance level of .05.
+
+```{r}
+compute_mdes(V = blocked_fixed_nocovariate_V(m = 12, 
+                                             nt = 10,
+                                             nc = 20,
+                                             icc = .19), 
+             df = blocked_fixed_nocovariate_df(m = 12, 
+                                             nt = 10,
+                                             nc = 20), 
+             beta = 1-.8, 
+             alpha = .05 
+             )
+```
+
+### Question 2
+
+A member of the study team claims that a better study would use a
+similar portion of students in treatment and control condition. Using
+the [planner tool](https://steppcenter.shinyapps.io/Planner/), find the
+minimum detectable effect for a randomized block study with fixed
+effects that employed 12 schools, in each of which 15 students are
+assigned to the treatment group and 15 students are assigned the control
+group when power is .8 for a test with a significance level of .05. Is
+this design more sensitive?
+
+```{r}
+compute_mdes(V = blocked_fixed_nocovariate_V(m = 12, 
+                                             nt = 15,
+                                             nc = 15,
+                                             icc = .19), 
+             df = blocked_fixed_nocovariate_df(m = 12, 
+                                             nt = 15,
+                                             nc = 15), 
+             beta = 1-.8, 
+             alpha = .05 
+             )
+
+```
+
+### Question 3
+
+\~covariates
+
+# References
+
+[Barker, B. S., & Ansorge, J. (2007). Robotics as means to increase
+achievement scores in an informal learning environment. *Journal of
+research on technology in education*, *39*(3),
+229-243.](http://web.b.ebscohost.com.turing.library.northwestern.edu/ehost/pdfviewer/pdfviewer?vid=1&sid=71d566ac-b312-45f8-a4d1-00b37f0e57c7%40sessionmgr103)
+
+[Spybrook, J., Westine, C. D., & Taylor, J. A. (2016). Design parameters
+for impact research in science education: A multistate analysis. *AERA
+Open*, *2*(1),
+2332858415625975.](https://journals.sagepub.com/doi/10.1177/2332858415625975)
