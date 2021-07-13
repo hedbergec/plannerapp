@@ -1,6 +1,5 @@
 ---
-title: "Lab for individual randomized control trial"
-author: "STEPP Center"
+title: "Lab for individually randomized control trials"
 output: word_document
 editor_options: 
   markdown: 

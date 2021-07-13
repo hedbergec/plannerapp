@@ -1,7 +1,6 @@
 ---
-title: "Lab for randomized block control trial"
-subtitle: "Fixed Effects"
-author: "STEPP Center"
+title: "Lab for randomized block control trials"
+subtitle: "Random Effects"
 output: word_document
 editor_options: 
   markdown: 
@@ -33,25 +32,24 @@ general, as well as in studying a STEM related field in college.
 Teachers have reported that students in the program are more engaged in
 their science classes.
 
-+---------+------------------------------------------------------------+
-| PICO    | Details                                                    |
-+=========+============================================================+
-| Pop     | Black high school students interested in robotics in an    |
-| ulation | Atlanta public school.                                     |
-+---------+------------------------------------------------------------+
-| Inter   | After-school robotics program, 16 weeks x 2 hours          |
-| vention |                                                            |
-+---------+------------------------------------------------------------+
-| Com     | Unclear                                                    |
-| parison |                                                            |
-+---------+------------------------------------------------------------+
-| Outcome | Belonging (in STEM), Science grades in school, interest in |
-|         | applying to college                                        |
-+---------+------------------------------------------------------------+
++-------------+-----------------------------------------------------------+
+| PICO        | Details                                                   |
++=============+===========================================================+
+| Population  | Black high school students interested in robotics in an   |
+|             | Atlanta public school.                                    |
++-------------+-----------------------------------------------------------+
+| I           | After-school robotics program, 16 weeks x 2 hours         |
+| ntervention |                                                           |
++-------------+-----------------------------------------------------------+
+| Comparison  | Unclear                                                   |
++-------------+-----------------------------------------------------------+
+| Outcome     | Belonging (in STEM), Science grades in school, interest   |
+|             | in applying to college                                    |
++-------------+-----------------------------------------------------------+
 
 # Plausible Evaluation Design
 
-## Random Assignment Within Blocks (Schools): Fixed Effects
+## Random Assignment Within Blocks (Schools): Random Effects
 
 Suppose researchers wish to evaluate the effectiveness of a similar
 program on student science grades in school. Researchers enroll students
@@ -69,9 +67,10 @@ Westine and Taylor
 Table 4).
 
 The analysis will employ a two-level hierarchical linear model (students
-nested within schools) with a random intercept (and possibly other
-parameters defined below) to compare the averages fo the treatment and
-control students. The treatment indicator varies at the student level.
+nested within schools) with a random intercept and random treatment
+effect to compare the averages of the treatment and control students.
+The expected ratio of the estimated treatment effect variance component
+to the estimated intercept variance component is 0.25.
 
 For simplicity, assume perfect compliance with random assignment and a
 perfect response rate.
@@ -80,16 +79,18 @@ perfect response rate.
 
 Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
 find the minimum detectable effect for a randomized block study with
-fixed effects that employed 12 schools, in each of which 10 students are
-assigned to the treatment group and 20 students are assigned the control
-group when power is .8 for a test with a significance level of .05.
+random effects that employed 12 schools, in each of which 10 students
+are assigned to the treatment group and 20 students are assigned the
+control group when power is .8 for a test with a significance level of
+.05.
 
 ```{r}
-compute_mdes(V = blocked_fixed_nocovariate_V(m = 12, 
+compute_mdes(V = blocked_random_nocovariate_V(m = 12, 
                                              nt = 10,
                                              nc = 20,
-                                             icc = .19), 
-             df = blocked_fixed_nocovariate_df(m = 12, 
+                                             icc = .19, 
+                                             upsilon = 0.25), 
+             df = blocked_random_nocovariate_df(m = 12,   
                                              nt = 10,
                                              nc = 20), 
              beta = 1-.8, 
@@ -102,18 +103,19 @@ compute_mdes(V = blocked_fixed_nocovariate_V(m = 12,
 A member of the study team claims that a better study would use a
 similar portion of students in treatment and control condition. Using
 the [planner tool](https://steppcenter.shinyapps.io/Planner/), find the
-minimum detectable effect for a randomized block study with fixed
+minimum detectable effect for a randomized block study with random
 effects that employed 12 schools, in each of which 15 students are
 assigned to the treatment group and 15 students are assigned the control
 group when power is .8 for a test with a significance level of .05. Is
 this design more sensitive?
 
 ```{r}
-compute_mdes(V = blocked_fixed_nocovariate_V(m = 12, 
+compute_mdes(V = blocked_random_nocovariate_V(m = 12, 
                                              nt = 15,
                                              nc = 15,
-                                             icc = .19), 
-             df = blocked_fixed_nocovariate_df(m = 12, 
+                                             icc = .19, 
+                                             upsilon = 0.25), 
+             df = blocked_random_nocovariate_df(m = 12, 
                                              nt = 15,
                                              nc = 15), 
              beta = 1-.8, 
@@ -124,7 +126,41 @@ compute_mdes(V = blocked_fixed_nocovariate_V(m = 12,
 
 ### Question 3
 
-\~covariates
+After signing up the schools, it was apparent that using a 10th grade
+math test as a covariate was possible for the analysis. Earlier analyses
+of other cohorts show that the 10th grade math test was correlated with
+the focal science test at $\rho = .8$ for an R-square value of
+$\rho^2 = .64$. The additional assumption is that the correlation
+between the average math score and the treatment impact at the school
+level is .5, so that the covariate predicts one quarter of the treatment
+effect variance (.25). The hope is that having this covariate can reduce
+the total number of schools needed from 12 to 10.
+
+Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
+find the minimum detectable effect for a randomized block study with
+random effects that employed 10 schools, in each of which 15 students
+are assigned to the treatment group and 15 students are assigned the
+control group for an analysis that also includes the earlier math score,
+when power is .8 for a test with a significance level of .05. Is this
+design more sensitive?
+
+```{r}
+compute_mdes(V = blocked_random_covariate_V(m = 10, 
+                                             nt = 15,
+                                             nc = 15,
+                                             icc = .19, 
+                                             upsilon = 0.25,
+                                           R2_1 = .64,
+                                           R2_2 = .25,
+                                           q = 1), 
+             df = blocked_random_covariate_df(m = 10, 
+                                             nt = 15,
+                                             nc = 15,
+                                             q = 1), 
+             beta = 1-.8, 
+             alpha = .05 
+             )
+```
 
 # References
 
