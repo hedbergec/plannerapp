@@ -9,7 +9,7 @@ Functions in `stable functions` are to be written and edited as typical code and
 
 The general approach for all power and mdes computations is that the expected test statistic can be organized into the form for 
 
-  E(t) = d * V
+  E(t) = d * sqrt(V)
 
 where d is the effect size relative to the population variance and V is a function of the design matrix and other corrections necessary to express d as a population effect size. 
 
