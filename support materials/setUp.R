@@ -5,7 +5,6 @@
 #### git push --set-upstream plannerapp master
 
 # steppcenter@northwestern.edu
-# pword:  Stepp.center
 
 #https://canvas.northwestern.edu/courses/135809
 #NetID: ehr6170 
