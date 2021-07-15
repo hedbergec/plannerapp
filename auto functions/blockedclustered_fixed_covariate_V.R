@@ -6,6 +6,7 @@ blockedclustered_fixed_covariate_V <- function(
 	n,
 	icc,
 	R2_1,
+	R2_2,
 	q
 	){
 		#expression 30 in Hedges and Rhoads

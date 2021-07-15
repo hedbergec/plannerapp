@@ -5,6 +5,7 @@ blocked_fixed_covariate_V <- function(
 	nc,
 	icc,
 	R2_1,
+	R2_2,
 	q
 	){
 		#
