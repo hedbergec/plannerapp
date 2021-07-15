@@ -4,6 +4,7 @@ clustered_random_covariate_N <- function(
 	mc,
 	n
 	){
+		#
 		N <- n*(mt+mc)
 	return(N)
 }

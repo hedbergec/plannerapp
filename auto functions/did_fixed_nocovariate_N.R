@@ -3,6 +3,7 @@ did_fixed_nocovariate_N <- function(
 	nt,
 	nc
 	){
+		#
 		N <- nt+nc
 	return(N)
 }

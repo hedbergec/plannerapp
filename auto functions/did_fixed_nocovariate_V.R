@@ -4,8 +4,8 @@ did_fixed_nocovariate_V <- function(
 	nc,
 	ar
 	){
-		V <- (nt*nc)/(nt+nc)*(1/(2*(1-ar)))
 		#From appendix in DiD Chapter
+		V <- (nt*nc)/(nt+nc)*(1/(2*(1-ar)))
 	return(V)
 }
 

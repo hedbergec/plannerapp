@@ -1,12 +1,13 @@
 # NOTE this code auto-written based on menuManager sheet code
-blocked_random_covariate_df <- function(
-	m,
-	nt,
-	nc,
+blockedclustered_fixed_covariate_df <- function(
+	k,
+	mt,
+	mc,
+	n,
 	q
 	){
 		#
-		df <- m*(nt+nc)-2-q
+		df <- k-1-q
 	return(df)
 }
 

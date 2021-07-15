@@ -3,6 +3,7 @@ did_fixed_nocovariate_df <- function(
 	nt,
 	nc
 	){
+		#
 		df <- nt+nc-2
 	return(df)
 }

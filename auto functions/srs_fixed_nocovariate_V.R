@@ -3,6 +3,7 @@ srs_fixed_nocovariate_V <- function(
 	nt,
 	nc
 	){
+		#
 		p <- nt/(nt+nc)
 		n <- nt+nc
 		V <- n*p*(1-p)

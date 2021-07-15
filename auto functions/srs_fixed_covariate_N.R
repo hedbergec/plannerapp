@@ -3,6 +3,7 @@ srs_fixed_covariate_N <- function(
 	nt,
 	nc
 	){
+		#
 		N <- nt+nc
 	return(N)
 }

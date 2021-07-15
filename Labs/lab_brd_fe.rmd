@@ -32,21 +32,12 @@ general, as well as in studying a STEM related field in college.
 Teachers have reported that students in the program are more engaged in
 their science classes.
 
-+---------+-----------------------------------------------------------+
-| PICO    | Details                                                   |
-+=========+===========================================================+
-| Pop     | Black high school students interested in robotics in an   |
-| ulation | Atlanta public school.                                    |
-+---------+-----------------------------------------------------------+
-| Inter   | After-school robotics program, 16 weeks x 2 hours         |
-| vention |                                                           |
-+---------+-----------------------------------------------------------+
-| Com     | Unclear                                                   |
-| parison |                                                           |
-+---------+-----------------------------------------------------------+
-| Outcome | Belonging (in STEM), Science grades in school, interest   |
-|         | in applying to college                                    |
-+---------+-----------------------------------------------------------+
+| PICO          | Details                                                                        |
+|---------------|--------------------------------------------------------------------------------|
+| Pop ulation   | Black high school students interested in robotics in an Atlanta public school. |
+| Inter vention | After-school robotics program, 16 weeks x 2 hours                              |
+| Com parison   | Unclear                                                                        |
+| Outcome       | Belonging (in STEM), Science grades in school, interest in applying to college |
 
 # Plausible Evaluation Design
 

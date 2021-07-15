@@ -4,6 +4,7 @@ srs_fixed_covariate_df <- function(
 	nc,
 	q
 	){
+		#
 		df <- nt+nc-2-q
 	return(df)
 }

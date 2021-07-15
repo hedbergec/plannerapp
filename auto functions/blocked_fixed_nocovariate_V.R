@@ -5,6 +5,7 @@ blocked_fixed_nocovariate_V <- function(
 	nc,
 	icc
 	){
+		#
 		p <- nt/(nt+nc)
 		n <- nt+nc
 		V <- m*n*p*(1-p)*(1/(1-icc))

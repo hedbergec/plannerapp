@@ -31,21 +31,12 @@ indeed, making connections between science and their lives. Student
 knowledge of science seems to have increased, as does student
 motivation. 
 
-+---------+-----------------------------------------------------------+
-| PICO    | Details                                                   |
-+=========+===========================================================+
-| Pop     | Elementary school teachers and students in grades 3-5 in  |
-| ulation | elementary schools in Detroit serving high %s of low-SES, |
-|         | majority Black students                                   |
-+---------+-----------------------------------------------------------+
-| Inter   | Professional Development program (teachers) + Science     |
-| vention | units                                                     |
-+---------+-----------------------------------------------------------+
-| Com     | In these schools, science is otherwise taught using       |
-| parison | textbooks                                                 |
-+---------+-----------------------------------------------------------+
-| Outcome | Motivation, Science test                                  |
-+---------+-----------------------------------------------------------+
+| PICO          | Details                                                                                                                                    |
+|---------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| Pop ulation   | Elementary school teachers and students in grades 3-5 in elementary schools in Detroit serving high %s of low-SES, majority Black students |
+| Inter vention | Professional Development program (teachers) + Science units                                                                                |
+| Com parison   | In these schools, science is otherwise taught using textbooks                                                                              |
+| Outcome       | Motivation, Science test                                                                                                                   |
 
 # Plausible Evaluation Design
 

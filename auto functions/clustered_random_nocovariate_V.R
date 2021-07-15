@@ -5,6 +5,7 @@ clustered_random_nocovariate_V <- function(
 	n,
 	icc
 	){
+		#
 		p <- mt/(mt+mc)
 		m <- mt+mc
 		V <- m*n*p*(1-p)*(1/(1+(n-1)*icc))

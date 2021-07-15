@@ -4,6 +4,7 @@ blocked_random_covariate_N <- function(
 	nt,
 	nc
 	){
+		#
 		N <- m*(nt+nc)
 	return(N)
 }

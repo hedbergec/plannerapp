@@ -1,11 +1,12 @@
 # NOTE this code auto-written based on menuManager sheet code
-clustered_random_nocovariate_N <- function(
+blockedclustered_fixed_nocovariate_N <- function(
+	k,
 	mt,
 	mc,
 	n
 	){
 		#
-		N <- n*(mt+mc)
+		N <- k*(mt+mc)*n
 	return(N)
 }
 

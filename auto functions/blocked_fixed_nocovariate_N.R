@@ -4,6 +4,7 @@ blocked_fixed_nocovariate_N <- function(
 	nt,
 	nc
 	){
+		#
 		N <- m*(nt+nc)
 	return(N)
 }
