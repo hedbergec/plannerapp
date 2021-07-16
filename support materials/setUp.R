@@ -80,14 +80,31 @@ for (sample in sample_list[,1]) {
       select(inference, label) %>%
       as.matrix() #creates 2 columns, the first is the inference id, the second its label
     
+    if (nrow(inference_list) > 1) {
+      choice_list_inference <- c(waitchoice, setNames(inference_list[,1], inference_list[,2]))
+    }
+    else {
+      choice_list_inference <- c(setNames(inference_list[,1], inference_list[,2]))
+    }
+    
+    if (nrow(model_list) > 1) {
+      choice_list_model <- c(waitchoice, setNames(model_list[,1], model_list[,2]))
+    }
+    else {
+      choice_list_model <- c(setNames(model_list[,1], model_list[,2]))
+    }
+    
+   
+    
     menuBank[["samplePicked"]][[sample]][["designPicked"]][[design]] <- list( #make the inference, model, and stat menus based on sample choices
+
       inferenceMenu = selectInput(inputId = "inference",
                                   label = "What is your inference goal?",
-                                  choices = c(waitchoice, setNames(inference_list[,1], inference_list[,2]))
+                                  choices = choice_list_inference
       ),
       modelMenu = selectInput(inputId = "model",
                               label = "What is your model?",
-                              choices = c(waitchoice, setNames(model_list[,1], model_list[,2]))
+                              choices = choice_list_model
       ),
       dimPicked = list() #dim = design, inference, model
     )

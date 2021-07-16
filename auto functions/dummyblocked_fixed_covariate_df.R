@@ -1,11 +1,12 @@
 # NOTE this code auto-written based on menuManager sheet code
-blocked_fixed_nocovariate_df <- function(
+dummyblocked_fixed_covariate_df <- function(
 	m,
 	nt,
-	nc
+	nc,
+	q
 	){
 		#
-		df <- m*(nt+nc)-2
+		df <- m*(nt+nc)-2-q
 	return(df)
 }
 

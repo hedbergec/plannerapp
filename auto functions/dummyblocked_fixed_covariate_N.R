@@ -1,5 +1,5 @@
 # NOTE this code auto-written based on menuManager sheet code
-blocked_fixed_nocovariate_N <- function(
+dummyblocked_fixed_covariate_N <- function(
 	m,
 	nt,
 	nc
