@@ -9,9 +9,7 @@
 #https://canvas.northwestern.edu/courses/135809
 #NetID: ehr6170 
 
-set.seed(172)
-
-#source("support materials/makeQEDData.R")
+source("support materials/makeQEDData.R")
 
 rm(list = ls()) #clean slate
 system('rm -R "./auto functions/"')
@@ -94,10 +92,10 @@ for (sample in sample_list[,1]) {
       choice_list_model <- c(setNames(model_list[,1], model_list[,2]))
     }
     
-   
+    
     
     menuBank[["samplePicked"]][[sample]][["designPicked"]][[design]] <- list( #make the inference, model, and stat menus based on sample choices
-
+      
       inferenceMenu = selectInput(inputId = "inference",
                                   label = "What is your inference goal?",
                                   choices = choice_list_inference
@@ -266,44 +264,49 @@ rm(ofunctions)
 qed_data <- list()
 
 for (f in list.files("Data")) {
-  data <- data.frame(read_csv(paste0("Data/",f))) %>% 
-    mutate(west = region == 4) %>%
+  postdata <- data.frame(read_csv(paste0("Data/",f))) %>% 
     select(-region) %>% 
+    select(-private) %>%
     select(-female)
-  compare_schools <- unique(data[which(data$treat == 0),"school"])
   
-  treat_schools_a <- sample(unique(data[which(data$treat == 1 & data$urban == 1),"school"]), 2, replace = FALSE)
-  treat_schools_b <- sample(unique(data[which(data$treat == 1 & data$urban == 0),"school"]), 4, replace = FALSE)
-  treat_schools_c <- sample(unique(data[which(data$treat == 1 & data$west == 1),"school"]), 2, replace = FALSE)
-  treat_schools_d <- sample(unique(data[which(data$treat == 1 & data$west == 0),"school"]), 4, replace = FALSE)
-  treat_schools_e <- sample(unique(data[which(data$treat == 1 & data$private == 0),"school"]), 2, replace = FALSE)
-  treat_schools_f <- sample(unique(data[which(data$treat == 1 & data$private == 1),"school"]), 2, replace = FALSE)
+  data <- postdata %>% 
+    mutate(pretest = scale(pretest)) %>%
+    group_by(school) %>%
+    mutate(schmean = mean(pretest) > 0)
   
-  treat_schools <- unique(c(treat_schools_a, 
-                          treat_schools_b, 
-                          treat_schools_c, 
-                          treat_schools_d,
-                          treat_schools_e,
-                          treat_schools_f))
+  set.seed(170111)
   
-  print(table(data$school, data$treat))
+  qed_data[[paste0(sub(".csv","",f),"_comparelist")]] <- unique(c(
+    sample(unique(data[which(data$treat == 0 & data$urban == 1),"school"])$school, 1, replace = FALSE),
+    sample(unique(data[which(data$treat == 0 & data$urban == 0),"school"])$school, 1, replace = FALSE),
+    sample(unique(data[which(data$treat == 0 & data$schmean == 0),"school"])$school, 4, replace = FALSE),
+    sample(unique(data[which(data$treat == 0 & data$schmean == 1),"school"])$school, 1, replace = FALSE)
+  )
+  )
   
-  qed_data[[sub(".csv","",f)]] <- data %>% 
-    filter(school %in% c(treat_schools,compare_schools)) %>% 
+  qed_data[[paste0(sub(".csv","",f),"_treatlist")]] <- unique(c(
+    sample(unique(data[which(data$treat == 1 & data$urban == 1),"school"])$school, 3, replace = FALSE),
+    sample(unique(data[which(data$treat == 1 & data$urban == 0),"school"])$school, 1, replace = FALSE),
+    sample(unique(data[which(data$treat == 1 & data$schmean == 0),"school"])$school, 3, replace = FALSE),
+    sample(unique(data[which(data$treat == 1 & data$schmean == 1),"school"])$school, 1, replace = FALSE)
+  )
+  )
+  
+  
+  
+  qed_data[[sub(".csv","",f)]] <- postdata %>% 
+    filter(treat == 0 | school %in% qed_data[[paste0(sub(".csv","",f),"_treatlist")]]) %>%
     data.frame()
+  
+  
+  
 }
+
+qed_vars <- c("nonwhite","ses","pretest", "urban")
+
 rm(f)
 rm(data)
-rm(compare_schools)
-rm(treat_schools_a) 
-rm(treat_schools_b)
-rm(treat_schools_c) 
-rm(treat_schools_d)
-rm(treat_schools_e)
-rm(treat_schools_f)
-rm(treat_schools)
 
-qed_vars <- c("nonwhite","ses","pretest", "private","west","urban")
 
 save.image("Planner/appData.RData")
 

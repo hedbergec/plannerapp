@@ -1,12 +1,12 @@
 # NOTE this code auto-written based on menuManager sheet code
 blockedclustered_fixed_nocovariate_df <- function(
-	k,
-	mt,
-	mc,
+	m,
+	kt,
+	kc,
 	n
 	){
 		#
-		df <- k-1
+		df <- m-1
 	return(df)
 }
 

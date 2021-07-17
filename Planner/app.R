@@ -372,7 +372,7 @@ server <- function(input, output) {
                 choices = c(
                   "make choice/reset" = "waiting",
                   "Random Selection of Schools to treatment" = "between_random",
-                  "Systematic Selection of Schools to treatment" = "between_biased_school_student"
+                  "Systematic Selection of Schools to treatment" = "between_biased"
                 )
     )
     
@@ -438,8 +438,7 @@ server <- function(input, output) {
     selectizeInput("treatpicked", 
                    "Select treatment schools",
                    choices = qedData_stats_treat()$school,
-                   select = qedData_stats_treat()$school,
-                   options = list(minItems = length(qedData_stats_treat()$school)),
+                   select = qed_data[[paste0(input$qedScenario, "_treatlist")]],
                    multiple = TRUE)
     
   })
@@ -538,8 +537,7 @@ server <- function(input, output) {
     selectizeInput("comparepicked", 
                    "Select comparison schools",
                    choices = qedData_stats_compare()$school,
-                   select = sample(qedData_stats_compare()$school,10),
-                   options = list(minItems = 2),
+                   select = qed_data[[paste0(input$qedScenario, "_comparelist")]],
                    multiple = TRUE)
   })
   

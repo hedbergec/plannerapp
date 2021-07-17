@@ -1,0 +1,188 @@
+---
+title: "Lab for randomized block trials assigning clusters within blocks"
+subtitle: "Chapter 10"
+output: word_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include=TRUE) 
+load("../Planner/appData.Rdata")
+```
+
+# Case Study
+
+## **High School After-School Robotics Program**
+
+Dr. Carlos -- a computer scientist -- and his students have been running
+an after-school outreach program focused on robotics at a nearby high
+school in Atlanta. This high school predominately serves Black students
+-- which are underrepresented in computer science -- and the students
+come from both middle-class and low-SES families. In order to be
+admitted to the program, which is free, students had to apply and be
+recommended by a teacher. Once admitted, students in the program meet
+once a week for 2 hours for 16 weeks. During the lessons, they learn to
+program and build robots to complete tasks and, at the end of the
+program, they take part in a mini 'competition'. The research team has
+been excited to see how the students have responded to the program,
+including how this has affected their interest in computer science in
+general, as well as in studying a STEM related field in college.
+Teachers have reported that students in the program are more engaged in
+their science classes.
+
+| PICO         | Details                                                                        |
+|--------------|--------------------------------------------------------------------------------|
+| Population   | Black high school students interested in robotics in an Atlanta public school. |
+| Intervention | After-school robotics program, 16 weeks x 2 hours                              |
+| Comparison   | Unclear                                                                        |
+| Outcome      | Belonging (in STEM), Science grades in school, interest in applying to college |
+
+# Plausible Evaluation Design
+
+## Random Assignment of Clusters Within Blocks (Schools): Fixed School Effects
+
+Suppose researchers wish to evaluate the effectiveness of a similar
+program on student science grades in school. Researchers enroll teachers
+and their students in the study during the the fall term. Teachers who
+are enrolled into the study are randomized within each school into
+either the treatment condition (the program) or a control condition.
+Spring science scores on a state-mandated standardized test are used as
+the outcome. A set of schools are recruited for the study from a variety
+of districts through a professional development conference for state
+principals and district membership is not considered in the design. For
+planning purposes, researchers use a teacher-level (within-school)
+intraclass correlation of .05.
+
+The analysis will employ a two-level hierarchical linear model (students
+nested within teachers) with a random intercept at the teacher level and
+block covariates for schools to compare the averages of the treatment
+and control students.
+
+For simplicity, assume perfect compliance with random assignment and a
+perfect response rate.
+
+### Question 1
+
+Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
+find the minimum detectable effect for a randomized block study with
+random effects that employed 5 schools, in each of which are 2 teachers
+randomized into treatment and 2 randomized into control, each with 20
+students, when power is .8 for a test with a significance level of .05.
+
+```{r}
+compute_mdes(V = blockedclustered_fixed_nocovariate_V(k = 5,
+                                                        mt = 2, 
+                                                      mc = 2,
+                                                      n = 20,
+                                                      icc = .05), 
+             df = blockedclustered_fixed_nocovariate_df(k = 5,
+                                                        mt = 2, 
+                                                      mc = 2,
+                                                      n = 20), 
+             beta = 1-.8, 
+             alpha = .05 
+)
+```
+
+### Question 2
+
+A member of the study team claims that many schools only have a two
+teachers. Using the [planner
+tool](https://steppcenter.shinyapps.io/Planner/), find the minimum
+detectable effect for a randomized block study with random effects that
+employed 5 schools, in each of which there is 1 teacher randomized into
+treatment and 1 randomized into control, each with 20 students, when
+power is .8 for a test with a significance level of .05.
+
+```{r}
+compute_mdes(V = blockedclustered_fixed_nocovariate_V(k = 5,
+                                                        mt = 1, 
+                                                      mc = 1,
+                                                      n = 20,
+                                                      icc = .05), 
+             df = blockedclustered_fixed_nocovariate_df(k = 5,
+                                                        mt = 1, 
+                                                      mc = 1,
+                                                      n = 20), 
+             beta = 1-.8, 
+             alpha = .05 
+)
+
+```
+
+### Question 3
+
+The results from Question 2 are different from Question 1. If the
+students and teachers are fixed, schools may need to be added. How many
+schools need to be added to the design in Question 2 to get a similar
+MDES as what you found for Question 1? Before you answer, consider
+whether the total sample sizes in Questions 1 and 2, would you need to
+increase blocks proportionally?
+
+```{r}
+compute_mdes(V = blockedclustered_fixed_nocovariate_V(k = 8,
+                                                        mt = 1, 
+                                                      mc = 1,
+                                                      n = 20,
+                                                      icc = .05), 
+             df = blockedclustered_fixed_nocovariate_df(k = 8,
+                                                        mt = 1, 
+                                                      mc = 1,
+                                                      n = 20), 
+             beta = 1-.8, 
+             alpha = .05 
+)
+```
+
+### Question 4
+
+After signing up the schools, it was apparent that using a 10th grade
+math test as a covariate was possible for the analysis. Earlier analyses
+of other cohorts show that the 10th grade math test was correlated with
+the focal science test at the teacher level at $\rho = .8$ for an
+R-square value of $\rho^2 = .64$, and at the student level at
+$\rho = .5$ for an R-square value of $\rho^2 = .25$. With this
+covariate, would it be possible to still use the sample design in
+Question 2 to get the sensitivity of plan in Question 1?
+
+Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
+find the minimum detectable effect for a randomized block study with
+random effects that employed 5 schools, in each of which there is 1
+teacher randomized into treatment and 1 randomized into control, each
+with 20 students, and using the covariate, when power is .8 for a test
+with a significance level of .05.
+
+```{r}
+compute_mdes(V = blockedclustered_fixed_covariate_V(k = 5,
+                                                        mt = 1, 
+                                                      mc = 1,
+                                                      n = 20,
+                                                      icc = .05,
+                                                    R2_1 = .25,
+                                                    R2_2 = .64
+                                                    ), 
+             df = blockedclustered_fixed_covariate_df(k = 5,
+                                                        mt = 1, 
+                                                      mc = 1,
+                                                      n = 20,
+                                                      q = 1), 
+             beta = 1-.8, 
+             alpha = .05 
+)
+```
+
+Is this covariate enough? What other adjustments could be made?
+
+# References
+
+[Barker, B. S., & Ansorge, J. (2007). Robotics as means to increase
+achievement scores in an informal learning environment. *Journal of
+research on technology in education*, *39*(3),
+229-243.](http://web.b.ebscohost.com.turing.library.northwestern.edu/ehost/pdfviewer/pdfviewer?vid=1&sid=71d566ac-b312-45f8-a4d1-00b37f0e57c7%40sessionmgr103)
+
+[Spybrook, J., Westine, C. D., & Taylor, J. A. (2016). Design parameters
+for impact research in science education: A multistate analysis. *AERA
+Open*, *2*(1),
+2332858415625975.](https://journals.sagepub.com/doi/10.1177/2332858415625975)

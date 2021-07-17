@@ -25,10 +25,12 @@ make_school <- function( #function to create a school based on summary stats
   for (b in names(t_weights)) { #will not loop if no weights are given
     tw[b] <- t_weights[b]
   }
+  sx <- data.frame(scale(data, center = TRUE, scale = FALSE))
+  colnames(sx) <- names(data)
   data$treat <- rbinom(
     nrow(data),
     1,
-    pnorm(cbind(cons = 1, data) %>% as.matrix() %*% tw) #if no weights are given, this is a bunch of .5s
+    pnorm(cbind(cons = 1, sx) %>% as.matrix() %*% tw) #if no weights are given, this is a bunch of .5s
   )
   if (cluster_t) { #cluster assignment is rounded mean of treat
     data$treat <- round(mean(data$treat))
