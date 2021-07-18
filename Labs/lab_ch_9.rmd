@@ -118,7 +118,7 @@ R-square value of $\rho^2 = .09$).
 Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
 find the minimum detectable effect for a cluster randomized study in
 which 6 schools are in the treatment group and 6 schools are in the
-control group, in each of which 30 students are surveyed for the
+control group, in each of which 20 students are surveyed for the
 computation of the motivation scale, when power is .8 for a test with a
 significance level of .05.
 
