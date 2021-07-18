@@ -8,7 +8,7 @@ editor_options:
 ---
 
 ```{r, setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, include=TRUE) 
+knitr::opts_chunk$set(echo = FALSE, include=FALSE) 
 load("../Planner/appData.Rdata")
 ```
 
@@ -32,12 +32,29 @@ indeed, making connections between science and their lives. Student
 knowledge of science seems to have increased, as does student
 motivation.
 
-| PICO         | Details                                                                                                                                          |
-|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| Population   | Elementary school teachers and students in grades 3-5 in elementary schools in Detroit serving high percents of low-SES, majority Black students |
-| Intervention | Professional Development program (teachers) + Science units                                                                                      |
-| Comparison   | In these schools, science is otherwise taught using textbooks                                                                                    |
-| Outcome      | Motivation, Science test                                                                                                                         |
++-----+----------------------------------------------------------------+
+| P   | Details                                                        |
+| ICO |                                                                |
++=====+================================================================+
+| P   | Elementary school teachers and students in grades 3-5 in       |
+| opu | elementary schools in Detroit serving high percents of         |
+| lat | low-SES, majority Black students                               |
+| ion |                                                                |
++-----+----------------------------------------------------------------+
+| Int | Professional Development program (teachers) + Science units    |
+| erv |                                                                |
+| ent |                                                                |
+| ion |                                                                |
++-----+----------------------------------------------------------------+
+| C   | In these schools, science is otherwise taught using textbooks  |
+| omp |                                                                |
+| ari |                                                                |
+| son |                                                                |
++-----+----------------------------------------------------------------+
+| O   | Motivation, Science test                                       |
+| utc |                                                                |
+| ome |                                                                |
++-----+----------------------------------------------------------------+
 
 # Plausible Evaluation Design
 

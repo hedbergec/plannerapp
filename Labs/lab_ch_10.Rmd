@@ -8,7 +8,7 @@ editor_options:
 ---
 
 ```{r, setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, include=TRUE) 
+knitr::opts_chunk$set(echo = FALSE, include=FALSE) 
 load("../Planner/appData.Rdata")
 ```
 
@@ -32,12 +32,21 @@ general, as well as in studying a STEM related field in college.
 Teachers have reported that students in the program are more engaged in
 their science classes.
 
-| PICO         | Details                                                                        |
-|--------------|--------------------------------------------------------------------------------|
-| Population   | Black high school students interested in robotics in an Atlanta public school. |
-| Intervention | After-school robotics program, 16 weeks x 2 hours                              |
-| Comparison   | Unclear                                                                        |
-| Outcome      | Belonging (in STEM), Science grades in school, interest in applying to college |
++---------+------------------------------------------------------------+
+| PICO    | Details                                                    |
++=========+============================================================+
+| Pop     | Black high school students interested in robotics in an    |
+| ulation | Atlanta public school.                                     |
++---------+------------------------------------------------------------+
+| Inter   | After-school robotics program, 16 weeks x 2 hours          |
+| vention |                                                            |
++---------+------------------------------------------------------------+
+| Com     | Unclear                                                    |
+| parison |                                                            |
++---------+------------------------------------------------------------+
+| Outcome | Belonging (in STEM), Science grades in school, interest in |
+|         | applying to college                                        |
++---------+------------------------------------------------------------+
 
 # Plausible Evaluation Design
 
@@ -72,14 +81,14 @@ randomized into treatment and 2 randomized into control, each with 20
 students, when power is .8 for a test with a significance level of .05.
 
 ```{r}
-compute_mdes(V = blockedclustered_fixed_nocovariate_V(k = 5,
-                                                        mt = 2, 
-                                                      mc = 2,
+compute_mdes(V = blockedclustered_fixed_nocovariate_V(m = 5,
+                                                        kt = 2, 
+                                                      kc = 2,
                                                       n = 20,
                                                       icc = .05), 
-             df = blockedclustered_fixed_nocovariate_df(k = 5,
-                                                        mt = 2, 
-                                                      mc = 2,
+             df = blockedclustered_fixed_nocovariate_df(m = 5,
+                                                        kt = 2, 
+                                                      kc = 2,
                                                       n = 20), 
              beta = 1-.8, 
              alpha = .05 
@@ -97,14 +106,14 @@ treatment and 1 randomized into control, each with 20 students, when
 power is .8 for a test with a significance level of .05.
 
 ```{r}
-compute_mdes(V = blockedclustered_fixed_nocovariate_V(k = 5,
-                                                        mt = 1, 
-                                                      mc = 1,
+compute_mdes(V = blockedclustered_fixed_nocovariate_V(m = 5,
+                                                        kt = 1, 
+                                                      kc = 1,
                                                       n = 20,
                                                       icc = .05), 
-             df = blockedclustered_fixed_nocovariate_df(k = 5,
-                                                        mt = 1, 
-                                                      mc = 1,
+             df = blockedclustered_fixed_nocovariate_df(m = 5,
+                                                        kt = 1, 
+                                                      kc = 1,
                                                       n = 20), 
              beta = 1-.8, 
              alpha = .05 
@@ -122,14 +131,14 @@ whether the total sample sizes in Questions 1 and 2, would you need to
 increase blocks proportionally?
 
 ```{r}
-compute_mdes(V = blockedclustered_fixed_nocovariate_V(k = 8,
-                                                        mt = 1, 
-                                                      mc = 1,
+compute_mdes(V = blockedclustered_fixed_nocovariate_V(m = 8,
+                                                        kt = 1, 
+                                                      kc = 1,
                                                       n = 20,
                                                       icc = .05), 
-             df = blockedclustered_fixed_nocovariate_df(k = 8,
-                                                        mt = 1, 
-                                                      mc = 1,
+             df = blockedclustered_fixed_nocovariate_df(m = 8,
+                                                        kt = 1, 
+                                                      kc = 1,
                                                       n = 20), 
              beta = 1-.8, 
              alpha = .05 
@@ -155,17 +164,17 @@ with 20 students, and using the covariate, when power is .8 for a test
 with a significance level of .05.
 
 ```{r}
-compute_mdes(V = blockedclustered_fixed_covariate_V(k = 5,
-                                                        mt = 1, 
-                                                      mc = 1,
+compute_mdes(V = blockedclustered_fixed_covariate_V(m = 5,
+                                                        kt = 1, 
+                                                      kc = 1,
                                                       n = 20,
                                                       icc = .05,
                                                     R2_1 = .25,
                                                     R2_2 = .64
                                                     ), 
-             df = blockedclustered_fixed_covariate_df(k = 5,
-                                                        mt = 1, 
-                                                      mc = 1,
+             df = blockedclustered_fixed_covariate_df(m = 5,
+                                                        kt = 1, 
+                                                      kc = 1,
                                                       n = 20,
                                                       q = 1), 
              beta = 1-.8, 

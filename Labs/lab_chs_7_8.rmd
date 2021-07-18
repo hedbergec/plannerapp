@@ -8,7 +8,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, include=TRUE)
+knitr::opts_chunk$set(echo = FALSE, include=FALSE)
 load("../Planner/appData.Rdata")
 ```
 
@@ -150,19 +150,20 @@ general, as well as in studying a STEM related field in college.
 Teachers have reported that students in the program are more engaged in
 their science classes.
 
-+--------------+-----------------------------------------------------------+
-| PICO         | Details                                                   |
-+==============+===========================================================+
-| Population   | Black high school students interested in robotics in an   |
-|              | Atlanta public school.                                    |
-+--------------+-----------------------------------------------------------+
-| Intervention | After-school robotics program, 16 weeks x 2 hours         |
-+--------------+-----------------------------------------------------------+
-| Comparison   | Unclear                                                   |
-+--------------+-----------------------------------------------------------+
-| Outcome      | Belonging (in STEM), Science grades in school, interest   |
-|              | in applying to college                                    |
-+--------------+-----------------------------------------------------------+
++-------------+--------------------------------------------------------+
+| PICO        | Details                                                |
++=============+========================================================+
+| Population  | Black high school students interested in robotics in   |
+|             | an Atlanta public school.                              |
++-------------+--------------------------------------------------------+
+| I           | After-school robotics program, 16 weeks x 2 hours      |
+| ntervention |                                                        |
++-------------+--------------------------------------------------------+
+| Comparison  | Unclear                                                |
++-------------+--------------------------------------------------------+
+| Outcome     | Belonging (in STEM), Science grades in school,         |
+|             | interest in applying to college                        |
++-------------+--------------------------------------------------------+
 
 # Plausible Evaluation Design B
 

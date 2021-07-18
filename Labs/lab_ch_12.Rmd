@@ -8,10 +8,18 @@ editor_options:
 ---
 
 ```{r, setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, include=TRUE) 
+knitr::opts_chunk$set(echo = FALSE, include=FALSE) 
 load("../Planner/appData.Rdata")
 library(plotly)
 ```
+
+## Important Note
+
+Matching is a very complex task. The purpose of this lab is to give
+everyone a feel for what is ultimately done with computer algorithms.
+The hope is that you can explore these topics during this lab. We
+encourage you to not feel frustrated if a perfect solution is
+unattainable: it rarely is!
 
 # Case Study
 
@@ -33,19 +41,21 @@ indeed, making connections between science and their lives. Student
 knowledge of science seems to have increased, as does student
 motivation.
 
-+-------------------+----------------------------------------------------------------+
-| PICO              | Details                                                        |
-+===================+================================================================+
-| Population        | Elementary school teachers and students in grades 3-5 in       |
-|                   | elementary schools in Detroit serving high percents of         |
-|                   | low-SES, majority Black students                               |
-+-------------------+----------------------------------------------------------------+
-| Intervention      | Professional Development program (teachers) + Science units    |
-+-------------------+----------------------------------------------------------------+
-| Comparison        | In these schools, science is otherwise taught using textbooks  |
-+-------------------+----------------------------------------------------------------+
-| Outcome           | Motivation, Science test                                       |
-+-------------------+----------------------------------------------------------------+
++---------------+------------------------------------------------------+
+| PICO          | Details                                              |
++===============+======================================================+
+| Population    | Elementary school teachers and students in grades    |
+|               | 3-5 in elementary schools in Detroit serving high    |
+|               | percents of low-SES, majority Black students         |
++---------------+------------------------------------------------------+
+| Intervention  | Professional Development program (teachers) +        |
+|               | Science units                                        |
++---------------+------------------------------------------------------+
+| Comparison    | In these schools, science is otherwise taught using  |
+|               | textbooks                                            |
++---------------+------------------------------------------------------+
+| Outcome       | Motivation, Science test                             |
++---------------+------------------------------------------------------+
 
 # Plausible Evaluation Design
 
@@ -56,128 +66,90 @@ program on student science motivation. Researchers enrolled schools in
 the program during the summer to serve as treatment schools and now need
 to examine the rest of schools in the state to find equivalent matches.
 School average of a state test scaled to have a mean of 50 and standard
-deviation of 10
+deviation of 10.
 
-### Question 1
+## Scenario A: Seemingly Unrelated Treatment Assignment
 
-Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
-find the minimum detectable effect for a cluster randomized study in
-which 6 schools are in the treatment group and 6 schools are in the
-control group, in each of which 20 students are surveyed for the
-computation of the motivation scale, when power is .8 for a test with a
-significance level of .05.
+In the [planner tool](https://steppcenter.shinyapps.io/Planner/), select
+the `QED Selection` tab and pick the "random selection" scenario. In
+this scenario, the state has
+`r length(table(qed_data$between_random$school))` schools and
+`r length(qed_data$between_random_treatlist)` of them are in your
+program. A random selection of
+`r length(qed_data$between_random_comparelist)` comparison schools has
+been made for you.
 
-```{r}
-compute_mdes(V = clustered_random_nocovariate_V(mt = 6,
-                                             mc = 6,
-                                             n = 20,
-                                             icc = .05), 
-             df = clustered_random_nocovariate_df(mt = 6,
-                                             mc = 6,
-                                             n = 20), 
-             beta = 1-.8, 
-             alpha = .05 
-             )
-```
+Examine the "Balance Statistics between Treatment and Control" table.
+The columns for `nonwhite` and `ses` columns represent the balance in
+standard deviation units for student level indicators of being a student
+of color and having a lower socioeconomic status. The `pretest` is also
+a balance statistic, but for a test score covariate. The `urban` column
+is another balance statistic, but this is a school-level variable.
 
-### Question 2
+The table under "Means across Students by Treatment and Control" give
+averages (proportions for `nonwhite`, `ses`, and `urban`, and the mean
+`pretest` score for a scale that ranges from 0 to 100 with a mean of
+50).
 
-The total sample in Question 1 is 240. A member of the study team claims
-that a better study would use 5 schools in treatment and 5 schools in
-control and 50 students in each school for a total sample of 500,
-arguing that doubling the sample would vastly increase the sensitivity.
+Under "Select Schools" you find two fields that allow you to add or
+remove schools from the comparison and treatment group. The "Explore"
+tabs allow you to examine the means of each school and sort on columns
+(such as the Mahalanobis Distance of the possible comparison schools.
 
-Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
-find the minimum detectable effect for a cluster randomized study in
-which 5 schools are in the treatment group and 5 schools are in the
-control group, in each of which 50 students are surveyed for the
-computation of the motivation scale, when power is .8 for a test with a
-significance level of .05.
+### Question A-1
 
-Is this design much more sensitive?
+Note the column `Mahalanobis Distance` in the "Balance Statistics"
+table, it currently reads `2.02`. Next, under "Comparison Schools", sort
+the comparison pool by the `Mahalanobis Distance` column. You will see
+that school `281` has a large distance metric. Under "Select Schools,"
+add school 281 to the comparison pool. Check the "Balance Statistics"
+table, what happened?
 
-```{r}
-compute_mdes(V = clustered_random_nocovariate_V(mt = 5,
-                                             mc = 5,
-                                             n = 50,
-                                             icc = .05), 
-             df = clustered_random_nocovariate_df(mt = 5,
-                                             mc = 5,
-                                             n = 50), 
-             beta = 1-.8, 
-             alpha = .05 
-             )
+### Question A-2
 
-```
+Remove school `281` from your comparison selection. Your selections
+should now read `r qed_data$between_random_comparelist`. Schools `354`
+`307`, and `239` seem to have high distances. Remove one or two of them
+from the comparison list, what do you notice about the balance
+statistics?
 
-### Question 3
+### Question A-3
 
-Another researcher claims that instead of doubling the sample, the same
-resources can be used to pre-test the students in each school. Earlier
-analyses of the motivation instrument show that correlation between
-surveys is about $\rho = .9$ at the student level (for an R-square value
-of $\rho^2 = .81$) and about $\rho = .3$ at the school level (for an
-R-square value of $\rho^2 = .09$).
+Next, remove all schools from the comparison list. Using the "Comparison
+Schools" table, sort on `Mahalanobis Distance`. Adjust the table to show
+10 entries. What do you notice in the urban column? Select these schools
+10 schools. Examine the "Balance Statistics" and "Means across Students
+by Treatment and Control" table.
 
-Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
-find the minimum detectable effect for a cluster randomized study in
-which 6 schools are in the treatment group and 6 schools are in the
-control group, in each of which 30 students are surveyed for the
-computation of the motivation scale, when power is .8 for a test with a
-significance level of .05.
+What would you do?
 
-Assuming that the strategy for Question 2 is costs the same amount as
-this strategy, which produces the more sensitive study?
+### Question A-4
 
-```{r}
-compute_mdes(V = clustered_random_covariate_V(mt = 6,
-                                             mc = 6,
-                                             n = 20,
-                                             icc = .05,
-                                             R2_1 = .81,
-                                             R2_2 = .09), 
-             df = clustered_random_covariate_df(mt = 6,
-                                             mc = 6,
-                                             n = 20,
-                                             q = 1), 
-             beta = 1-.8, 
-             alpha = .05 
-             )
-```
+After thinking about what you would do, use the tool to come up with a
+good set of 10 comparison schools. If stuck, see if you can find a
+treatment school or two to remove.
 
-### Question 4
+## Scenario B: Treatment Assignment Related to Average Pretest
 
-Another researcher claims that instead of using a pretest, the same
-resources can be used to gather data in more comparison schools. Doing
-so may increase the ICC to .1, but could yield 12 comparison schools in
-total.
+In the [planner tool](https://steppcenter.shinyapps.io/Planner/), select
+the `QED Selection` tab and pick the "Systematic Selection" scenario. In
+this scenario, the state has
+`r length(table(qed_data$between_biased$school))` schools and
+`r length(qed_data$between_biased_treatlist)` of them are in your
+program. A random selection of
+`r length(qed_data$between_biased_comparelist)` comparison schools has
+been made for you.
 
-Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
-find the minimum detectable effect for a cluster randomized study in
-which 6 schools are in the treatment group and 12 schools are in the
-control group, in each of which 20 students are surveyed for the
-computation of the motivation scale, but with an ICC of .1, when power
-is .8 for a test with a significance level of .05.
+The tools are the same, except these data have be rigged so that the
+likelihood of schools being part of the program is positively related to
+the average student scores.
 
-```{r}
-compute_mdes(V = clustered_random_nocovariate_V(mt = 6,
-                                             mc = 12,
-                                             n = 20,
-                                             icc = .1), 
-             df = clustered_random_nocovariate_df(mt = 6,
-                                             mc = 12,
-                                             n = 20), 
-             beta = 1-.8, 
-             alpha = .05 
-             )
-```
+### Question B
 
-Do you think this is a good idea?
+Using the metrics available to you, and knowing the selection
+relationship with test score averages, attempt to build a sample.
 
-# References
+### Bonus
 
-[Barron,B. J., Schwartz, D. L., Vye, N. J., Moore, A., Petrosino, A.,
-Zech, L., & Bransford, J. D. (1998). Doing with understanding: Lessons
-from research on problem-and project-based learning. *Journal of the
-learning sciences*, *7*(3-4),
-271-311.](https://www-jstor-org.turing.library.northwestern.edu/stable/pdf/1466789.pdf)
+Revisit your solutions, but occasionally return to the "Power and MDES"
+tab to see if your designs have adequate sensitivity.
