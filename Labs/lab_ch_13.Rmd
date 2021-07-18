@@ -28,12 +28,6 @@ take-home materials. This study focuses on a particular exhibit that
 focuses on fostering the development of spatial skills through a series
 of building activities.
 
-| PICO         | Details                                                    |
-|--------------|------------------------------------------------------------|
-| Population   | Children ages 3 -- 5 that visit the STEM Museum in Florida |
-| Intervention | Construction exhibit, focuses on spatial skills            |
-| Comparison   | Unclear                                                    |
-| Outcome      | Unclear                                                    |
 
 # Plausible Evaluation Design
 

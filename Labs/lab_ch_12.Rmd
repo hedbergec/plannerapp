@@ -39,21 +39,6 @@ indeed, making connections between science and their lives. Student
 knowledge of science seems to have increased, as does student
 motivation.
 
-+---------------+------------------------------------------------------+
-| PICO          | Details                                              |
-+===============+======================================================+
-| Population    | Elementary school teachers and students in grades    |
-|               | 3-5 in elementary schools in Detroit serving high    |
-|               | percents of low-SES, majority Black students         |
-+---------------+------------------------------------------------------+
-| Intervention  | Professional Development program (teachers) +        |
-|               | Science units                                        |
-+---------------+------------------------------------------------------+
-| Comparison    | In these schools, science is otherwise taught using  |
-|               | textbooks                                            |
-+---------------+------------------------------------------------------+
-| Outcome       | Motivation, Science test                             |
-+---------------+------------------------------------------------------+
 
 # Plausible Evaluation Design
 

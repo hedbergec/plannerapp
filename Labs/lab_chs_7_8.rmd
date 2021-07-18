@@ -28,13 +28,6 @@ take-home materials. This study focuses on a particular exhibit that
 focuses on fostering the development of spatial skills through a series
 of building activities.
 
-| PICO         | Details                                                    |
-|--------------|------------------------------------------------------------|
-| Population   | Children ages 3 -- 5 that visit the STEM Museum in Florida |
-| Intervention | Construction exhibit, focuses on spatial skills            |
-| Comparison   | Unclear                                                    |
-| Outcome      | Unclear                                                    |
-
 # Plausible Evaluation Design A
 
 ## Individual Random Assignment
@@ -146,21 +139,6 @@ including how this has affected their interest in computer science in
 general, as well as in studying a STEM related field in college.
 Teachers have reported that students in the program are more engaged in
 their science classes.
-
-+-------------+--------------------------------------------------------+
-| PICO        | Details                                                |
-+=============+========================================================+
-| Population  | Black high school students interested in robotics in   |
-|             | an Atlanta public school.                              |
-+-------------+--------------------------------------------------------+
-| I           | After-school robotics program, 16 weeks x 2 hours      |
-| ntervention |                                                        |
-+-------------+--------------------------------------------------------+
-| Comparison  | Unclear                                                |
-+-------------+--------------------------------------------------------+
-| Outcome     | Belonging (in STEM), Science grades in school,         |
-|             | interest in applying to college                        |
-+-------------+--------------------------------------------------------+
 
 # Plausible Evaluation Design B
 
