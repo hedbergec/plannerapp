@@ -8,9 +8,7 @@ editor_options:
 ---
 
 ```{r, setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, include=FALSE) 
 load("../Planner/appData.Rdata")
-library(plotly)
 ```
 
 ## Important Note

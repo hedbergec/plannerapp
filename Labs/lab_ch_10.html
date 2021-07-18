@@ -187,16 +187,16 @@ pre code {
 </thead>
 <tbody>
 <tr class="odd">
-<td>Pop ulation</td>
-<td>Black high school students interested in robotics in an Atlanta public school.</td>
+<td>Populatio | Atlant</td>
+<td>n | Black high school students interested in robotics in an a public school.</td>
 </tr>
 <tr class="even">
-<td>Inter vention</td>
-<td>After-school robotics program, 16 weeks x 2 hours</td>
+<td>Intervent |</td>
+<td>ion | After-school robotics program, 16 weeks x 2 hours</td>
 </tr>
 <tr class="odd">
-<td>Com parison</td>
-<td>Unclear</td>
+<td>Compariso |</td>
+<td>n | Unclear</td>
 </tr>
 <tr class="even">
 <td>Outcome</td>
@@ -216,19 +216,23 @@ pre code {
 <div id="question-1" class="section level3">
 <h3>Question 1</h3>
 <p>Using the <a href="https://steppcenter.shinyapps.io/Planner/">planner tool</a>, find the minimum detectable effect for a randomized block study with random effects that employed 5 schools, in each of which are 2 teachers randomized into treatment and 2 randomized into control, each with 20 students, when power is .8 for a test with a significance level of .05.</p>
+<pre><code>## [1] 0.5305286</code></pre>
 </div>
 <div id="question-2" class="section level3">
 <h3>Question 2</h3>
 <p>A member of the study team claims that many schools only have a two teachers. Using the <a href="https://steppcenter.shinyapps.io/Planner/">planner tool</a>, find the minimum detectable effect for a randomized block study with random effects that employed 5 schools, in each of which there is 1 teacher randomized into treatment and 1 randomized into control, each with 20 students, when power is .8 for a test with a significance level of .05.</p>
+<pre><code>## [1] 0.7502808</code></pre>
 </div>
 <div id="question-3" class="section level3">
 <h3>Question 3</h3>
 <p>The results from Question 2 are different from Question 1. If the students and teachers are fixed, schools may need to be added. How many schools need to be added to the design in Question 2 to get a similar MDES as what you found for Question 1? Before you answer, consider whether the total sample sizes in Questions 1 and 2, would you need to increase blocks proportionally?</p>
+<pre><code>## [1] 0.5118141</code></pre>
 </div>
 <div id="question-4" class="section level3">
 <h3>Question 4</h3>
 <p>After signing up the schools, it was apparent that using a 10th grade math test as a covariate was possible for the analysis. Earlier analyses of other cohorts show that the 10th grade math test was correlated with the focal science test at the teacher level at <span class="math inline">\(\rho = .8\)</span> for an R-square value of <span class="math inline">\(\rho^2 = .64\)</span>, and at the student level at <span class="math inline">\(\rho = .5\)</span> for an R-square value of <span class="math inline">\(\rho^2 = .25\)</span>. With this covariate, would it be possible to still use the sample design in Question 2 to get the sensitivity of plan in Question 1?</p>
 <p>Using the <a href="https://steppcenter.shinyapps.io/Planner/">planner tool</a>, find the minimum detectable effect for a randomized block study with random effects that employed 5 schools, in each of which there is 1 teacher randomized into treatment and 1 randomized into control, each with 20 students, and using the covariate, when power is .8 for a test with a significance level of .05.</p>
+<pre><code>## [1] 0.6346006</code></pre>
 <p>Is this covariate enough? What other adjustments could be made?</p>
 </div>
 </div>

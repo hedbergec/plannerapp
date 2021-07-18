@@ -8,7 +8,6 @@ editor_options:
 ---
 
 ```{r, setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, include=FALSE) 
 load("../Planner/appData.Rdata")
 ```
 
@@ -33,27 +32,27 @@ knowledge of science seems to have increased, as does student
 motivation.
 
 +-----+----------------------------------------------------------------+
-| P   | Details                                                        |
-| ICO |                                                                |
+| PICO   | Details                                                        |
+|  |                                                                |
 +=====+================================================================+
-| P   | Elementary school teachers and students in grades 3-5 in       |
-| opu | elementary schools in Detroit serving high percents of         |
-| lat | low-SES, majority Black students                               |
-| ion |                                                                |
+| Population   | Elementary school teachers and students in grades 3-5 in       |
+|  | elementary schools in Detroit serving high percents of         |
+|  | low-SES, majority Black students                               |
+|  |                                                                |
 +-----+----------------------------------------------------------------+
-| Int | Professional Development program (teachers) + Science units    |
-| erv |                                                                |
-| ent |                                                                |
-| ion |                                                                |
+| Intervention | Professional Development program (teachers) + Science units    |
+|  |                                                                |
+|  |                                                                |
+|  |                                                                |
 +-----+----------------------------------------------------------------+
-| C   | In these schools, science is otherwise taught using textbooks  |
-| omp |                                                                |
-| ari |                                                                |
-| son |                                                                |
+| Comparison   | In these schools, science is otherwise taught using textbooks  |
+|  |                                                                |
+|  |                                                                |
+|  |                                                                |
 +-----+----------------------------------------------------------------+
-| O   | Motivation, Science test                                       |
-| utc |                                                                |
-| ome |                                                                |
+| Outcome   | Motivation, Science test                                       |
+|  |                                                                |
+|  |                                                                |
 +-----+----------------------------------------------------------------+
 
 # Plausible Evaluation Design

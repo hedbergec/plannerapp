@@ -8,7 +8,6 @@ editor_options:
 ---
 
 ```{r, setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, include=FALSE) 
 load("../Planner/appData.Rdata")
 ```
 
@@ -35,14 +34,14 @@ their science classes.
 +---------+------------------------------------------------------------+
 | PICO    | Details                                                    |
 +=========+============================================================+
-| Pop     | Black high school students interested in robotics in an    |
-| ulation | Atlanta public school.                                     |
+| Population     | Black high school students interested in robotics in an    |
+|  | Atlanta public school.                                     |
 +---------+------------------------------------------------------------+
-| Inter   | After-school robotics program, 16 weeks x 2 hours          |
-| vention |                                                            |
+| Intervention   | After-school robotics program, 16 weeks x 2 hours          |
+|  |                                                            |
 +---------+------------------------------------------------------------+
-| Com     | Unclear                                                    |
-| parison |                                                            |
+| Comparison     | Unclear                                                    |
+|  |                                                            |
 +---------+------------------------------------------------------------+
 | Outcome | Belonging (in STEM), Science grades in school, interest in |
 |         | applying to college                                        |
