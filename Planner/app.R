@@ -3,6 +3,8 @@ library(plotly)
 library(tidyverse)
 library(data.table)
 library(shinythemes)
+library(ggplot2)
+library(ggpubr)
 
 server <- function(input, output) {
   
@@ -378,7 +380,6 @@ server <- function(input, output) {
     
   })
   
-  
   output$selectionTitle <- renderUI({
     req(input$qedScenario != "waiting")
     h3("Select Schools")
@@ -391,7 +392,6 @@ server <- function(input, output) {
   })
   
   #### QED Treatment Stats
-  
   
   qedData_stats_treat <- reactive({
     req(qedData())
@@ -670,6 +670,99 @@ server <- function(input, output) {
   })
   
   
+  #### Randomization ####
+  
+  output$chooseASeed <- renderUI({
+    selectInput("choose_a_seed",
+                "Would you like to set a seed for randomization?",
+                c("Yes","No"),
+                "No")
+  })
+  
+  output$setTheSeed <- renderUI({
+    if (input$choose_a_seed == "Yes") {
+      numericInput("the_set_seed",
+                   "Type a number",
+                   value = 123456)
+    }
+  })
+  
+  output$howManyRandomizeSlider <- renderUI({
+    req(input$choose_a_seed)
+    sliderInput("howManyRandomize",
+                label = "How many units should we randomize?",
+                min = 6, 
+                max = 24,
+                value = 10,
+                step = 2)
+  })
+  
+  output$howManyTreatmentSlider <- renderUI({
+    req(input$howManyRandomize)
+    sliderInput("howManyTreatment",
+                label = "How many units should we assign treatment?",
+                min = 2, 
+                max = input$howManyRandomize-2,
+                value = input$howManyRandomize/2,
+                step = 1)
+  })
+  
+  
+  dataToRandomize <- reactive({
+    req(input$howManyRandomize)
+    req(input$howManyTreatment)
+    req(input$choose_a_seed)
+    req(input$rerandomize)
+    if (input$choose_a_seed == "Yes") {
+      set.seed(input$the_set_seed)
+    }
+    else {
+      set.seed(round(runif(1,1,999999)))
+    }
+    the_assignments <- rep(2,input$howManyRandomize)
+    the_assignments[sample(
+      seq(to = input$howManyRandomize, from = 1),
+      size = input$howManyTreatment
+    )] <- 1
+    return(
+      data.frame(
+        cbind(
+          y = seq(from = input$howManyRandomize, to = 1),
+          person = seq(to = input$howManyRandomize, from = 1),
+          x = rep(1,input$howManyRandomize), 
+          value = the_assignments
+        )
+      )
+    )
+  })
+  
+  chooseStatement <- reactive({
+    req(input$howManyRandomize)
+    req(input$howManyTreatment)
+    phrase <- paste0(
+      "There are ",
+      prettyNum(choose(input$howManyRandomize,input$howManyTreatment), big.mark = ",", scientific = FALSE),
+      " ways to randomize ",
+      input$howManyTreatment,
+      " units to treatment from a set of ",
+      input$howManyRandomize,"."
+      
+    )
+    return(phrase)
+  })
+  
+  output$theChooseStatement <- renderUI({
+    req(chooseStatement())
+    h4(chooseStatement())
+  })
+  
+  output$plotOfRandomize <- renderPlot({
+    req(dataToRandomize())
+    plot_cards(
+      dataToRandomize()
+    )
+  },height = 800)
+  
   # make new data from selections, get list of vars, run g and cox on students, Mahalanobis Distance of school means, colored by treatment
   #
   # D2 <- mahalanobis(qed_data$between_random, colMeans(qed_data$between_random), cov(qed_data$between_random))
@@ -727,6 +820,26 @@ ui <- fluidPage(
             )
           )
         )
+      )
+    ),
+    tabPanel(
+      "Randomization",
+      fluid = TRUE,
+      fluidPage(
+        sidebarLayout(
+          sidebarPanel(
+            uiOutput("howManyRandomizeSlider"),
+            uiOutput("howManyTreatmentSlider"),
+            actionButton("rerandomize", "Randomization/re-randomization "),
+            uiOutput("chooseASeed"),
+            uiOutput("setTheSeed"),
+            uiOutput("theChooseStatement")
+          ),
+          mainPanel(
+            plotOutput("plotOfRandomize")
+          )
+        )
+        
       )
     ),
     tabPanel(

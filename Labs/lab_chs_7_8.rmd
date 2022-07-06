@@ -84,9 +84,11 @@ compute_mdes(V = srs_fixed_nocovariate_V(30,10),
 ### Question A-3
 
 There is some concern that the study may not be as sensitive as the
-researchers need it to be. The **first idea** is to use 60 families, with 30 in treatment and 30 in control, without a covariate. The **second idea** is to have each of the 40
-study members fill out a small questionnaire that would lead to a
-covariate correlated with the outcome at $\rho = 0.5$ ($\rho^2 = 0.25$). 
+researchers need it to be. The **first idea** is to use 60 families,
+with 30 in treatment and 30 in control, without a covariate. The
+**second idea** is to have each of the 40 study members fill out a small
+questionnaire that would lead to a covariate correlated with the outcome
+at $\rho = 0.5$ ($\rho^2 = 0.25$).
 
 Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
 find the minimum detectable effect for a study in which 30 families are

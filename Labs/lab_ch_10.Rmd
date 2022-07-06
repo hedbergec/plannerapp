@@ -31,8 +31,6 @@ general, as well as in studying a STEM related field in college.
 Teachers have reported that students in the program are more engaged in
 their science classes.
 
-
-
 # Plausible Evaluation Design
 
 ## Random Assignment of Clusters Within Blocks (Schools): Fixed School Effects
@@ -60,10 +58,10 @@ perfect response rate.
 ### Question 1
 
 Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
-find the minimum detectable effect for a randomized block study with
-random effects that employed 5 schools, in each of which are 2 teachers
-randomized into treatment and 2 randomized into control, each with 20
-students, when power is .8 for a test with a significance level of .05.
+find the minimum detectable effect for a randomized block study that
+employed 5 schools, in each of which are 2 teachers randomized into
+treatment and 2 randomized into control, each with 20 students, when
+power is .8 for a test with a significance level of .05.
 
 ```{r}
 compute_mdes(V = blockedclustered_fixed_nocovariate_V(m = 5,
@@ -85,10 +83,10 @@ compute_mdes(V = blockedclustered_fixed_nocovariate_V(m = 5,
 A member of the study team claims that many schools only have a two
 teachers. Using the [planner
 tool](https://steppcenter.shinyapps.io/Planner/), find the minimum
-detectable effect for a randomized block study with random effects that
-employed 5 schools, in each of which there is 1 teacher randomized into
-treatment and 1 randomized into control, each with 20 students, when
-power is .8 for a test with a significance level of .05.
+detectable effect for a randomized block study that employed 5 schools,
+in each of which there is 1 teacher randomized into treatment and 1
+randomized into control, each with 20 students, when power is .8 for a
+test with a significance level of .05.
 
 ```{r}
 compute_mdes(V = blockedclustered_fixed_nocovariate_V(m = 5,
@@ -128,6 +126,7 @@ compute_mdes(V = blockedclustered_fixed_nocovariate_V(m = 8,
              beta = 1-.8, 
              alpha = .05 
 )
+print(paste("with 8 schools"))
 ```
 
 ### Question 4
@@ -175,8 +174,3 @@ Is this covariate enough? What other adjustments could be made?
 achievement scores in an informal learning environment. *Journal of
 research on technology in education*, *39*(3),
 229-243.](http://web.b.ebscohost.com.turing.library.northwestern.edu/ehost/pdfviewer/pdfviewer?vid=1&sid=71d566ac-b312-45f8-a4d1-00b37f0e57c7%40sessionmgr103)
-
-[Spybrook, J., Westine, C. D., & Taylor, J. A. (2016). Design parameters
-for impact research in science education: A multistate analysis. *AERA
-Open*, *2*(1),
-2332858415625975.](https://journals.sagepub.com/doi/10.1177/2332858415625975)

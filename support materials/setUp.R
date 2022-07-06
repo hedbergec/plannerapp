@@ -9,7 +9,9 @@
 #https://canvas.northwestern.edu/courses/135809
 #NetID: ehr6170 
 
-source("support materials/makeQEDData.R")
+set.seed(101)
+
+#source("support materials/makeQEDData.R")
 
 rm(list = ls()) #clean slate
 system('rm -R "./auto functions/"')
