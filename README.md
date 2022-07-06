@@ -3,9 +3,7 @@ This is for an R-Shiny app to be used for teaching experimental designs.
 
 ## Contents
 
-`Data` is a directory with simulated data that is used in the QED game in the app. These files are created by `support materials/makeQEDData.R` based on statistics in `support materials/school_list.xlsx`. In `support materials/setUp.R` there is a command to source `makeQEDData.R` that is commented-out. This is to ensure the data do not change unless we really want to run again. 
-
-`Labs` are a set of R-markdown files and Word products for lab exercises. 
+`Data` is a directory with simulated data that is used in the QED game in the app. These files are created by `support materials/makeQEDData.R` based on statistics in `support materials/school_list.xlsx`. In `support materials/setUp.R` there is a command to source `makeQEDData.R` that is commented-out. This is to ensure the data do not change unless we really want to run again.  
 
 The shiny code and data for posting the app is in `Planner`
 
