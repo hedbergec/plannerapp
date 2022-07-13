@@ -17,10 +17,14 @@ Many of the functions, options, and titles are governed by the `support material
 
 ## Organization of operations
 
-The general approach for all power and mdes computations is that the expected test statistic can be organized into the form of 
+The general approach for all `power` and `mdes` computations is that the expected test statistic can be organized into the form of 
 
-  lambda = d * sqrt(V)
+$  \lambda = \delta \times \sqrt(V) $
 
-where d is the effect size relative to the population variance and V is a function of the design matrix and other corrections necessary to express d as a population effect size. 
+where $\delta$ is the effect size relative to the population variance and $V$ is a function of the design matrix and other corrections necessary to express $\delta$ as a population effect size. 
 
-Thus, choices in the app determine which functions for `V` and `df` are used, and the results are passed to a general `ncp` function for computing MDES or power. 
+Thus, choices in the app determine which functions for `V` and `df` are used, and the results are passed to a general `ncp` function for computing `MDES` or power. 
+
+The `compute_mdes_function` starts with Bloom's approximation and then iterates a bit to refine the MDES. This is to make better predictions for small `df`. 
+
+
