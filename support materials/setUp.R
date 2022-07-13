@@ -99,7 +99,7 @@ for (sample in sample_list[,1]) {
     menuBank[["samplePicked"]][[sample]][["designPicked"]][[design]] <- list( #make the inference, model, and stat menus based on sample choices
       
       inferenceMenu = selectInput(inputId = "inference",
-                                  label = "What is your inference goal?",
+                                  label = "Fixed or random effects",
                                   choices = choice_list_inference
       ),
       modelMenu = selectInput(inputId = "model",

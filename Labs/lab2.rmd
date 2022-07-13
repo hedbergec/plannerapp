@@ -1,6 +1,5 @@
 ---
-title: "Lab for individually and block randomized control trials"
-subtitle: "Chapters 7 and 8"
+title: "Lab for individually randomized designs"
 output: word_document
 editor_options: 
   markdown: 
@@ -50,11 +49,11 @@ perfect response rate.
 ### Question A-1
 
 Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
-find the minimum detectable effect for a study in which 20 families are
+find the minimum detectable effect for an `Individually Randomized Design` study in which 20 families are
 assigned to the treatment group and 20 families are assigned the control
 group when power is .8 for a test with a significance level of .05.
 
-```{r}
+```{r, include=FALSE}
 compute_mdes(V = srs_fixed_nocovariate_V(20,20),
              df=srs_fixed_nocovariate_df(20,20),
              beta = 1-.8,
@@ -73,7 +72,7 @@ treatment group and 10 families are assigned the control group when
 power is .8 for a test with a significance level of .05. Is this design
 more sensitive?
 
-```{r}
+```{r, include=FALSE}
 compute_mdes(V = srs_fixed_nocovariate_V(30,10),
              df=srs_fixed_nocovariate_df(30,10),
              beta = 1-.8,
@@ -91,13 +90,13 @@ questionnaire that would lead to a covariate correlated with the outcome
 at $\rho = 0.5$ ($\rho^2 = 0.25$).
 
 Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
-find the minimum detectable effect for a study in which 30 families are
+find the minimum detectable effect for an `Individually Randomized Design` study in which 30 families are
 assigned to the treatment group and 30 families are assigned the control
 group, without using a covariate, when power is .8 for a test with a
 significance level of .05. This is the sensitivity of the **first
 idea**.
 
-```{r}
+```{r, include=FALSE}
 compute_mdes(V = srs_fixed_nocovariate_V(nt = 30,nc = 30),
              df=srs_fixed_nocovariate_df(nt = 30,nc = 30),
              beta = 1-.8,
@@ -106,13 +105,13 @@ compute_mdes(V = srs_fixed_nocovariate_V(nt = 30,nc = 30),
 ```
 
 Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
-again, find the minimum detectable effect for a study in which 20
+again, find the minimum detectable effect for an `Individually Randomized Design` study in which 20
 families are assigned to the treatment group and 20 families are
 assigned the control group, with a covariate is employed where
 ($\rho^2 = 0.25$), when power is .8 for a test with a significance level
 of .05. This is the sensitivity of the **second idea**.
 
-```{r}
+```{r, include=FALSE}
 compute_mdes(V = srs_fixed_covariate_V(nt = 20, nc = 20, R2_1 = .25, q = 1),
              df=srs_fixed_covariate_df(nt = 20, nc = 20, q = 1),
              beta = 1-.8,
@@ -144,7 +143,7 @@ their science classes.
 
 # Plausible Evaluation Design B
 
-## Random Assignment Within Blocks (Schools): Fixed Effects
+## Multisite Individually Randomized Design with Fixed Effects
 
 Suppose researchers wish to evaluate the effectiveness of a similar
 program on student science grades in school. Researchers enroll students
@@ -164,12 +163,11 @@ perfect response rate.
 ### Question B-1
 
 Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
-find the minimum detectable effect for a randomized block study with
-fixed effects that employed 12 schools, in each of which 10 students are
+find the minimum detectable effect for a `Multisite Individually Randomized Design with Fixed Effects` study that employed 12 schools, in each of which 10 students are
 assigned to the treatment group and 30 students are assigned the control
 group when power is .8 for a test with a significance level of .05.
 
-```{r}
+```{r, include=FALSE}
 compute_mdes(V = dummyblocked_fixed_nocovariate_V(m = 12, 
                                              nt = 10,
                                              nc = 30,
@@ -187,13 +185,12 @@ compute_mdes(V = dummyblocked_fixed_nocovariate_V(m = 12,
 A member of the study team claims that a better study would use a
 similar portion of students in treatment and control condition. Using
 the [planner tool](https://steppcenter.shinyapps.io/Planner/), find the
-minimum detectable effect for a randomized block study with fixed
-effects that employed 12 schools, in each of which 20 students are
+minimum detectable effect for a `Multisite Individually Randomized Design with Fixed Effects` study that employed 12 schools, in each of which 20 students are
 assigned to the treatment group and 20 students are assigned the control
 group when power is .8 for a test with a significance level of .05. Is
 this design more sensitive?
 
-```{r}
+```{r, include=FALSE}
 compute_mdes(V = dummyblocked_fixed_nocovariate_V(m = 12, 
                                              nt = 20,
                                              nc = 20,
@@ -217,14 +214,13 @@ $\rho^2 = .64$. The hope is that having this covariate can reduce the
 total number of schools needed from 12 to 10.
 
 Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
-find the minimum detectable effect for a randomized block study with
-fixed effects that employed 10 schools, in each of which 20 students are
+find the minimum detectable effect for a `Multisite Individually Randomized Design with Fixed Effects` study that employed 10 schools, in each of which 20 students are
 assigned to the treatment group and 20 students are assigned the control
 group for an analysis that also includes the earlier math score, when
 power is .8 for a test with a significance level of .05. Is this design
 more sensitive?
 
-```{r}
+```{r, include=FALSE}
 compute_mdes(V = dummyblocked_fixed_covariate_V(m = 10, 
                                              nt = 20,
                                              nc = 20,

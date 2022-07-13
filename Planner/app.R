@@ -31,6 +31,22 @@ server <- function(input, output) {
     menuBank$samplePicked[[input$sample]][["designPicked"]][[input$design]][["inferenceMenu"]]
   })
   
+  ##inference menu currently does not add, made reactive. the above is not rendured
+  
+  input_inference <- reactive({
+    req(input$sample)
+
+    req(input$design)
+
+    inference <- "waiting"
+    if (input$sample != "waiting" & input$design != "waiting") {
+      inference <-  strsplit(menuBank[["samplePicked"]][[input$sample]][["designPicked"]][[input$design]][["inferenceMenu"]][["children"]][[2]][["children"]][[1]][["children"]][[1]],'"')[[1]][2]
+    }
+    return(
+      inference     
+      )
+  })
+  
   output$modelMenu <- renderUI({
     req(input$sample)
     req(input$sample != "waiting")
@@ -49,7 +65,7 @@ server <- function(input, output) {
       ]][["designPicked"
       ]][[input$design
       ]][["dimPicked"
-      ]][[paste0(input$design,"_",input$inference,"_",input$model)
+      ]][[paste0(input$design,"_",input_inference(),"_",input$model)
       ]][["inputs"]]
     )
     set_list_drop <- length(set_list) #remove "ranges," the last element
@@ -57,7 +73,7 @@ server <- function(input, output) {
     ]][["designPicked"
     ]][[input$design
     ]][["dimPicked"
-    ]][[paste0(input$design,"_",input$inference,"_",input$model)
+    ]][[paste0(input$design,"_",input_inference(),"_",input$model)
     ]][["inputs"]][-set_list_drop])
   })
   
@@ -79,8 +95,8 @@ server <- function(input, output) {
   output$effectsizeSlider <- renderUI({
     req(input$design)
     req(input$design != "waiting")
-    req(input$inference)
-    req(input$inference != "waiting")
+    req(input_inference())
+    req(input_inference() != "waiting")
     req(input$model)
     req(input$model != "waiting")
     sliderInput("es",
@@ -94,8 +110,8 @@ server <- function(input, output) {
   output$starterPowerSlider <- renderUI({
     req(input$design)
     req(input$design != "waiting")
-    req(input$inference)
-    req(input$inference != "waiting")
+    req(input_inference())
+    req(input_inference() != "waiting")
     req(input$model)
     req(input$model != "waiting")
     sliderInput("starterpower",
@@ -109,8 +125,8 @@ server <- function(input, output) {
   output$alphaMenu <- renderUI({
     req(input$design)
     req(input$design != "waiting")
-    req(input$inference)
-    req(input$inference != "waiting")
+    req(input_inference())
+    req(input_inference() != "waiting")
     req(input$model)
     req(input$model != "waiting")
     selectInput("alpha",
@@ -133,12 +149,12 @@ server <- function(input, output) {
   N <- reactive({
     req(input$design)
     req(input$design != "waiting")
-    req(input$inference)
-    req(input$inference != "waiting")
+    req(input_inference())
+    req(input_inference() != "waiting")
     req(input$model)
     req(input$model != "waiting")
     
-    dim_N <- paste0(input$design,"_",input$inference,"_",input$model,"_N")
+    dim_N <- paste0(input$design,"_",input_inference(),"_",input$model,"_N")
     
     input_string_N <- paste0(
       paste0("input$",
@@ -170,12 +186,12 @@ server <- function(input, output) {
   df <- reactive({
     req(input$design)
     req(input$design != "waiting")
-    req(input$inference)
-    req(input$inference != "waiting")
+    req(input_inference())
+    req(input_inference() != "waiting")
     req(input$model)
     req(input$model != "waiting")
     
-    dim_df <- paste0(input$design,"_",input$inference,"_",input$model,"_df")
+    dim_df <- paste0(input$design,"_",input_inference(),"_",input$model,"_df")
     input_string_df <- paste0(
       paste0("input$",
              menuBank$functionList[[dim_df]][["args"]]), 
@@ -203,12 +219,12 @@ server <- function(input, output) {
   V <- reactive({
     req(input$design)
     req(input$design != "waiting")
-    req(input$inference)
-    req(input$inference != "waiting")
+    req(input_inference())
+    req(input_inference() != "waiting")
     req(input$model)
     req(input$model != "waiting")
     
-    dim_V <- paste0(input$design,"_",input$inference,"_",input$model,"_V")
+    dim_V <- paste0(input$design,"_",input_inference(),"_",input$model,"_V")
     
     input_string_V <- paste0(
       paste0("input$",
@@ -239,8 +255,8 @@ server <- function(input, output) {
   ncp <- reactive({
     req(input$design)
     req(input$design != "waiting")
-    req(input$inference)
-    req(input$inference != "waiting")
+    req(input_inference())
+    req(input_inference() != "waiting")
     req(input$model)
     req(input$model != "waiting")
     req(input$es)
@@ -263,8 +279,8 @@ server <- function(input, output) {
   beta <- reactive({
     req(input$design)
     req(input$design != "waiting")
-    req(input$inference)
-    req(input$inference != "waiting")
+    req(input_inference())
+    req(input_inference() != "waiting")
     req(input$model)
     req(input$model != "waiting")
     req(ncp()$value)
@@ -292,8 +308,8 @@ server <- function(input, output) {
   power <- reactive({
     req(input$design)
     req(input$design != "waiting")
-    req(input$inference)
-    req(input$inference != "waiting")
+    req(input_inference())
+    req(input_inference() != "waiting")
     req(input$model)
     req(input$model != "waiting")
     req(beta()$value)
@@ -698,6 +714,7 @@ server <- function(input, output) {
   })
   
   output$howManyTreatmentSlider <- renderUI({
+    req(input$choose_a_seed)
     req(input$howManyRandomize)
     sliderInput("howManyTreatment",
                 label = "How many units should we assign treatment?",
@@ -714,11 +731,17 @@ server <- function(input, output) {
     req(input$choose_a_seed)
     req(input$rerandomize)
     if (input$choose_a_seed == "Yes") {
-      set.seed(input$the_set_seed)
+      if (!is.null(input$the_set_seed)) {
+        set.seed(input$the_set_seed)
+      }
+      else {
+        set.seed(round(runif(1,1,999999)))
+      }
     }
-    else {
+    if (input$choose_a_seed == "No") {
       set.seed(round(runif(1,1,999999)))
     }
+    
     the_assignments <- rep(2,input$howManyRandomize)
     the_assignments[sample(
       seq(to = input$howManyRandomize, from = 1),
@@ -752,22 +775,36 @@ server <- function(input, output) {
   })
   
   output$theChooseStatement <- renderUI({
+    req(input$howManyRandomize)
+    req(input$howManyTreatment)
     req(chooseStatement())
     h4(chooseStatement())
   })
   
-  output$plotOfRandomize <- renderPlot({
-    req(dataToRandomize())
-    plot_cards(
-      dataToRandomize()
-    )
-  },height = 800)
+  the_randomization_plot <- reactive({
+    if (length(dataToRandomize())==0) {
+      return(
+        ggplot() + geom_blank()
+      )
+    }
+    else {
+      return(
+        plot_cards(
+          dataToRandomize()
+        )
+      )
+    }
+  })
   
-  # make new data from selections, get list of vars, run g and cox on students, Mahalanobis Distance of school means, colored by treatment
-  #
-  # D2 <- mahalanobis(qed_data$between_random, colMeans(qed_data$between_random), cov(qed_data$between_random))
-  # D2 <- mahalanobis(qed_data$between_random, colMeans(qed_data$between_random[which(qed_data$between_random$treat == 1),]), cov(qed_data$between_random))
-  # plot(density(D2))
+  output$plotOfRandomize <- renderPlot({
+    req(input$howManyRandomize)
+    req(input$howManyTreatment)
+    req(dataToRandomize())
+    the_randomization_plot()
+  },height = 750)
+  
+  
+  
 }
 
 
@@ -781,17 +818,39 @@ ui <- fluidPage(
   ),
   tabsetPanel(
     tabPanel(
+      "Randomization",
+      fluid = TRUE,
+      fluidPage(
+        sidebarLayout(
+          sidebarPanel(
+            uiOutput("howManyRandomizeSlider"),
+            uiOutput("howManyTreatmentSlider"),
+            actionButton("rerandomize", "Randomization/re-randomization "),
+            uiOutput("chooseASeed"),
+            uiOutput("setTheSeed"),
+            uiOutput("theChooseStatement")
+          ),
+          mainPanel(
+            plotOutput("plotOfRandomize")
+          )
+        )
+        
+      )
+    ),
+    tabPanel(
       "Power and MDES", 
       fluid = TRUE,
       sidebarLayout(
         sidebarPanel(
           uiOutput("sampleMenu"),
           uiOutput("designMenu"),
-          uiOutput("inferenceMenu"),
           uiOutput("modelMenu"),
           uiOutput("input_set"),
+          h6("other settings; typical defaults"),
           uiOutput("alphaMenu"),
+          #uiOutput("inferenceMenu"),
           uiOutput("tailsMenu")
+          
         ),
         
         # Show 
@@ -820,26 +879,6 @@ ui <- fluidPage(
             )
           )
         )
-      )
-    ),
-    tabPanel(
-      "Randomization",
-      fluid = TRUE,
-      fluidPage(
-        sidebarLayout(
-          sidebarPanel(
-            uiOutput("howManyRandomizeSlider"),
-            uiOutput("howManyTreatmentSlider"),
-            actionButton("rerandomize", "Randomization/re-randomization "),
-            uiOutput("chooseASeed"),
-            uiOutput("setTheSeed"),
-            uiOutput("theChooseStatement")
-          ),
-          mainPanel(
-            plotOutput("plotOfRandomize")
-          )
-        )
-        
       )
     ),
     tabPanel(

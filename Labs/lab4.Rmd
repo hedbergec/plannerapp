@@ -1,6 +1,5 @@
 ---
-title: "Lab for randomized block trials assigning clusters within blocks"
-subtitle: "Chapter 10"
+title: "Lab for multisite cluster randomized designs"
 output: word_document
 editor_options: 
   markdown: 
@@ -33,7 +32,7 @@ their science classes.
 
 # Plausible Evaluation Design
 
-## Random Assignment of Clusters Within Blocks (Schools): Fixed School Effects
+## Multisite Cluster Randomized Designs  (fixed block effects and random cluster effects)
 
 Suppose researchers wish to evaluate the effectiveness of a similar
 program on student science grades in school. Researchers enroll teachers
@@ -58,12 +57,12 @@ perfect response rate.
 ### Question 1
 
 Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
-find the minimum detectable effect for a randomized block study that
+find the minimum detectable effect for a `Multisite Cluster Randomized Designs  (fixed block effects and random cluster effects)` that
 employed 5 schools, in each of which are 2 teachers randomized into
 treatment and 2 randomized into control, each with 20 students, when
 power is .8 for a test with a significance level of .05.
 
-```{r}
+```{r, include=FALSE}
 compute_mdes(V = blockedclustered_fixed_nocovariate_V(m = 5,
                                                         kt = 2, 
                                                       kc = 2,
@@ -83,12 +82,12 @@ compute_mdes(V = blockedclustered_fixed_nocovariate_V(m = 5,
 A member of the study team claims that many schools only have a two
 teachers. Using the [planner
 tool](https://steppcenter.shinyapps.io/Planner/), find the minimum
-detectable effect for a randomized block study that employed 5 schools,
+detectable effect for a `Multisite Cluster Randomized Designs  (fixed block effects and random cluster effects)` that employed 5 schools,
 in each of which there is 1 teacher randomized into treatment and 1
 randomized into control, each with 20 students, when power is .8 for a
 test with a significance level of .05.
 
-```{r}
+```{r, include=FALSE}
 compute_mdes(V = blockedclustered_fixed_nocovariate_V(m = 5,
                                                         kt = 1, 
                                                       kc = 1,
@@ -113,7 +112,7 @@ MDES as what you found for Question 1? Before you answer, consider
 whether the total sample sizes in Questions 1 and 2, would you need to
 increase blocks proportionally?
 
-```{r}
+```{r, include=FALSE}
 compute_mdes(V = blockedclustered_fixed_nocovariate_V(m = 8,
                                                         kt = 1, 
                                                       kc = 1,
@@ -141,13 +140,12 @@ covariate, would it be possible to still use the sample design in
 Question 2 to get the sensitivity of plan in Question 1?
 
 Using the [planner tool](https://steppcenter.shinyapps.io/Planner/),
-find the minimum detectable effect for a randomized block study with
-random effects that employed 5 schools, in each of which there is 1
+find the minimum detectable effect for a `Multisite Cluster Randomized Designs  (fixed block effects and random cluster effects)` that employed 5 schools, in each of which there is 1
 teacher randomized into treatment and 1 randomized into control, each
 with 20 students, and using the covariate, when power is .8 for a test
 with a significance level of .05.
 
-```{r}
+```{r, include=FALSE}
 compute_mdes(V = blockedclustered_fixed_covariate_V(m = 5,
                                                         kt = 1, 
                                                       kc = 1,

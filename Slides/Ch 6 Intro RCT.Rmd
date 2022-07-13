@@ -4,14 +4,16 @@ subtitle: "NSF Improving Education R&D Evaluations Workshop 2021"
 author: "Tipton"
 date: '2022-06-05'
 output:
-  slidy_presentation: default
+  powerpoint_presentation: 
+    fig_width: 9
   ioslides_presentation: default
+  slidy_presentation: default
 ---
 
 ```{r setup, include=FALSE}
 set.seed(101)
 knitr::opts_chunk$set(echo = FALSE)
-source("../Functions/plot_cards_function.R")
+source("../stable functions/plot_cards_function.R")
 library(ggplot2)
 library(ggpubr)
 ```
@@ -19,8 +21,6 @@ library(ggpubr)
 # Random assignment
 
 ..."does not mean that the experimenter writes down the names of the varieties [treatments] in any order that occurs to him, but that he carries out a physical experimental process of randomization, using means that shall ensure that each variety [treatment] will have an equal chance of being tested on any particular plot of ground [unit] (Fisher, 1935, p. 51)."
-
-# Randomization
 
 # How to randomize?
 
@@ -41,7 +41,12 @@ Let's say we want to randomize a set of 10 individuals into two groups, with ½ 
 
 Shuffle the cards well
 
+# Deck of cards approach
+
 For each unit, choose a card, determining which group they are in.
+
+-   Person 1 is Red (intervention group)
+-   Person 2 is Black (comparison group)
 
 Continue down the list of units.
 
@@ -55,7 +60,87 @@ When one group is full, the rest go into the other group.
 
 3\. In order, draw a card.
 
+# First two...
+
+```{r, echo = FALSE}
+plot_cards(
+  data.frame(
+    cbind(
+      y = c(10,9,8,7,6,5,4,3,2,1),
+      person = seq(1:10),
+      x = rep(1,10), 
+      value = c(2,1,2,1,2,2,2,1,1,1)
+    )
+  ),zero_out = c(10,9,8,7,6,5,4,3)
+)
+#https://bookdown.org/yihui/rmarkdown-cookbook/animation.html
+```
+
 # 
+
+```{r, echo = FALSE}
+plot_cards(
+  data.frame(
+    cbind(
+      y = c(10,9,8,7,6,5,4,3,2,1),
+      person = seq(1:10),
+      x = rep(1,10), 
+      value = c(2,1,2,1,2,2,2,1,1,1)
+    )
+  ),zero_out = c(10,9,8,7,6,5,4)
+)
+#https://bookdown.org/yihui/rmarkdown-cookbook/animation.html
+```
+
+# 
+
+```{r, echo = FALSE}
+plot_cards(
+  data.frame(
+    cbind(
+      y = c(10,9,8,7,6,5,4,3,2,1),
+      person = seq(1:10),
+      x = rep(1,10), 
+      value = c(2,1,2,1,2,2,2,1,1,1)
+    )
+  ),zero_out = c(10,9,8,7,6,5)
+)
+#https://bookdown.org/yihui/rmarkdown-cookbook/animation.html
+```
+
+# 
+
+```{r, echo = FALSE}
+plot_cards(
+  data.frame(
+    cbind(
+      y = c(10,9,8,7,6,5,4,3,2,1),
+      person = seq(1:10),
+      x = rep(1,10), 
+      value = c(2,1,2,1,2,2,2,1,1,1)
+    )
+  ),zero_out = c(10,9,8,7,6)
+)
+#https://bookdown.org/yihui/rmarkdown-cookbook/animation.html
+```
+
+# 
+
+```{r, echo = FALSE}
+plot_cards(
+  data.frame(
+    cbind(
+      y = c(10,9,8,7,6,5,4,3,2,1),
+      person = seq(1:10),
+      x = rep(1,10), 
+      value = c(2,1,2,1,2,2,2,1,1,1)
+    )
+  ),zero_out = c(10,9,8,7)
+)
+#https://bookdown.org/yihui/rmarkdown-cookbook/animation.html
+```
+
+# What group are the last 3 in ?
 
 ```{r, echo = FALSE}
 plot_cards(
@@ -71,9 +156,7 @@ plot_cards(
 #https://bookdown.org/yihui/rmarkdown-cookbook/animation.html
 ```
 
--   What group are these 3 in ?
-
-# 
+# For the last 3, I didn't even need to draw the cards to know which group they were in.
 
 ```{r, echo = FALSE}
 plot_cards(
@@ -89,8 +172,6 @@ plot_cards(
 #https://bookdown.org/yihui/rmarkdown-cookbook/animation.html
 ```
 
--   For the last 3, I didn't even need to draw the cards to know which group they were in.
-
 # Is this random?
 
 "When one group is full, the rest go into the other group."
@@ -105,11 +186,11 @@ Because humans aren't very good at generating random numbers.
 
 For example, which of these runs is more likely?
 
-#1: `r sample(rep(c("T","C"),5),10)`
+#1: `r rep(c("T","C"),5)`
 
 #2: `r sample(rep(c("T","C"),5),10)`
 
-They are both equally likely!
+They are both equally likely (1 out of `r choose(10,5)` possible ways to randomize 5 out of 10 to treatment)!
 
 # Computer generated random numbers
 
@@ -119,29 +200,22 @@ If you start with the same seed value, the process always yields the same random
 
 # What's so wrong with alternation?
 
-Notice that in run #1, the red and blacks alternated in a pattern. Why not just use this approach?
+Notice that in run #1, the red and blacks alternated in a pattern. Why not just use this approach? Three good reasons:
 
-Three good reasons:
-
-You can manipulate this easily, particularly if you know that there are some units you'd like to be in the intervention group.
-
-It's not actually random ... which means that the statistical properties that we need do not hold.
-
-If there is any sort of cyclical property to your data, you can end up with two groups that are quite different than one another.
+-   You can manipulate this easily, particularly if you know that there are some units you'd like to be in the intervention group.
+-   It's not actually random ... which means that the statistical properties that we need do not hold.
+-   If there is any sort of cyclical property to your data, you can end up with two groups that are quite different than one another.
 
 # Theoretical Objections to Randomization
 
-# Criticisms
-
 There are a variety of criticisms of random assignment and experiments. These include that they:
 
-Offer an oversimplified theory of causation.
+-   Offer an oversimplified theory of causation.
+-   Are unsuited for complex organizations like schools.
+-   Are premature without good theory.
+-   Are politically unfeasible.
 
-Are unsuited for complex organizations like schools.
-
-Are premature without good theory.
-
-Are politically unfeasible.
+# Theoretical Objections to Randomization
 
 Despite these claims, however, randomized experiments have been possible in education. In the last 20 years, for example, over 400 such studies have been conducted in schools in the US **funded by IES**.
 
@@ -149,25 +223,21 @@ Despite these claims, however, randomized experiments have been possible in educ
 
 Another criticism is that experiments often result in 'null' findings. That is, the effect sizes are small and often not statistically different than zero.
 
-But isn't this a finding in and of itself?
-
-*Incidentally, this is true in fields beyond education. In medicine, too, for example, the vast majority of new treatments are not found to be effective.*
+-   But isn't this a finding in and of itself?
+-   *Incidentally, this is true in fields beyond education. In medicine, too, for example, the vast majority of new treatments are not found to be effective.*
 
 # Aren't there alternatives?
 
 Yes, there are alternatives available. We will talk about two of these later this week:
 
-Non-equivalent control group designs
-
-Difference---in-difference designs
+-   Non-equivalent control group designs
+-   Difference-in-difference designs
 
 But in order to recover the causal effect, these methods:
 
-Require assumptions, some of which cannot be verified
-
-Require advanced statistical methods to be used in the analyses
-
-Require **more** data than experiments
+-   Require assumptions, some of which cannot be verified
+-   Require advanced statistical methods to be used in the analyses
+-   Require **more** data than experiments
 
 # Are they unethical?
 
@@ -187,7 +257,7 @@ Your routine is disrupted
 
 Time you could have spent learning or doing some other practice or intervention is focused on this one
 
-# The clinical equipoise principle 
+# The clinical equipoise principle
 
 ...states that it is ethical to randomly assign patients to a treatment or control if there is genuine uncertainty in the scientific community about whether the treatment is more effective than the control condition.
 
@@ -199,18 +269,19 @@ It would make no sense to evaluate a treatment if there were no reason to think 
 
 There is little evidence from field trials to support the effectiveness of a treatment that is undergoing an initial field trial.
 
-# Complex Randomization
-
 # Randomization can be complex
 
--   When you think of randomization, you likely think:
+When you think of randomization, you likely think:
+
 -   Every unit in the study has to be randomized
 -   Every unit has to have an equal chance of being in the intervention or comparison groups
 -   Randomization occurs once *at the beginning of the study*
--   None of these rules is required though!
--   The only requirements:
--   We know which units were randomized
--   Units that are randomized have a known probability $0 < p < 1$ of being in either group
+
+None of these rules is required though!
+
+# Randomization can be complex
+
+The only requirements: - We know which units were randomized - Units that are randomized have a known probability $0 < p < 1$ of being in either group
 
 # Complexities are your friend
 
@@ -226,11 +297,12 @@ This means that a lottery **randomization** is a **fair** way to allocate resour
 
 In an evaluation, **not** all units have to be randomized. The question of what units to randomize relates *not* to internal validity but to *external validity* .
 
+# Restricted randomization
+
 It may be beneficial to only randomize units to the intervention within a subset of the sample. For example,
 
-You might choose to exclude some students in order to reduce variation on the pretest.
-
-There are certain students or teachers that you know you would like to *guarantee* are included in the intervention group *we call these 'wildcards'*.
+-   You might choose to exclude some students in order to reduce variation on the pretest.
+-   There are certain students or teachers that you know you would like to *guarantee* are included in the intervention group *we call these 'wildcards'*.
 
 In either case, the units that are not randomized *do not* **end up in the analytic sample for the analysis** . But they *do* end up in the study.
 
@@ -258,24 +330,19 @@ Another approach, useful in clustered settings *like schools*, is to guarantee t
 
 For example, in a school:
 
-You might randomize different grade levels to receive the program
-
-You might only include 2nd grade in the study *randomizing groups*, but then provide the curriculum to everyone in the other grades
+-   You might randomize different grade levels to receive the program
+-   You might only include 2nd grade in the study *randomizing groups*, but then provide the curriculum to everyone in the other grades
 
 # But you have to explain it
 
 When you recruit schools (& teachers & students) to be part of an evaluation, you have to get their **informed consent** .
 
-This includes their consent to be randomized. Obtaining this consent requires that they understand:
-
-That any of the schools *including theirs* could be in the intervention or comparison
-
-That all of their "best" schools *or teachers ...* could end up in the comparison condition
+This includes their consent to be randomized. Obtaining this consent requires that they understand: - That any of the schools *including theirs* could be in the intervention or comparison - That all of their "best" schools *or teachers ...* could end up in the comparison condition
 
 # Overview of 4 Designs
 
 |                                    | Notation           | Sample Sizes | Chapter 7                      | Chapter 8               | Chapter 9                 | Chapter 10                          |
-|------------------------------------|--------------------|--------------|--------------------------------|-------------------------|---------------------------|-------------------------------------|
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
 | Intervention vs. Comparison        | $\alpha_i$         | 2            | Individually Randomized Design | Randomized Block Design | Cluster Randomized Design | Multisite Cluster Randomized Design |
 | Schools                            | $\beta_j$          | $m$          |                                | RE                      | RE, RA                    | RE                                  |
 | Students                           | $\epsilon_k$       | $n$          | RE, RA, O                      | RA, O                   | O                         | O                                   |

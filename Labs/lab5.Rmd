@@ -1,0 +1,118 @@
+---
+title: "Lab for non-equivalent control groups"
+output: word_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, setup, include=FALSE}
+library(tidyverse)
+load("../Planner/appData.Rdata")
+data <- qed_data[["between_random"]][which(qed_data[["between_random"]]$school == 306),-c(1,2,7)]
+data$ses <- 1-data$ses
+colnames(data) <- c("nonwhite", "ses", "math", "science")
+set.seed(101)
+data$treat <- rbinom(100,1,pnorm(scale(data$math)-1))
+```
+
+# Case Study
+
+## **High School After-School Robotics Program**
+
+Dr. Carlos – a computer scientist – and his students have been running an after school outreach program focused on robotics at a nearby high school in Atlanta. This high school predominately serves Black students – which are underrepresented in computer science – and the students come from both middle-class and low-SES families. In order to be admitted to the program, which is free, students had to apply and be recommended by a teacher. 
+
+Once admitted, students in the program meet once a week for 2 hours for 16 weeks. During the lessons, they learn to program and build robots to complete tasks and, at the end of the program, they take part in a mini ‘competition’. The research team has been excited to see how the students have responded to the program, including how this has affected their interest in computer science in general, as well as in studying a STEM related field in college. Teachers have reported that students in the program are more engaged in their science classes.  
+
+# Proposed Evaluation Design
+
+## Individual Self-Selection
+
+Suppose researchers wish to evaluate the effectiveness of a similar program on student science motivation. Researchers post flyers throughout the schools advertising the program and asking for any interested student to sign up. After a period of time, `r sum(data$treat)` students who sign up are compared to the rest of the `r sum(1-data$treat)` students in the school who did not sign up using standardized state test scores for science. 
+
+This `science` test's scores ranged from `r range(data$science)[1]` to `r range(data$science)[2]` and had a pooled standard deviation of `r round(sqrt((var(data[which(data$treat == 1), "science"])*sum(data$treat) + var(data[which(data$treat == 0), "science"])*sum(1-data$treat))/(sum(data$treat)+sum(1-data$treat)-2)), digits = 3)`. The mean of the treatment group was `r round(mean(data[which(data$treat == 1), "science"]), digits = 3)` and was `r round(mean(data[which(data$treat == 0), "science"]), digits = 3)` for the comparison group. Data on each student's previous year's `math` test, whether they are member of a `nonwhite` minority group, and have low `ses` are also available. 
+
+## Summary Statistics
+
+Below are the means of these variables
+
+```{r, echo=FALSE}
+results <- cbind(
+    "All" = t(data %>% summarise_all(mean)),
+    "Treatment" = t(data %>% filter(treat == 1) %>% summarise_all(mean)),
+    "Comparison" = t(data %>% filter(treat == 0) %>% summarise_all(mean))
+  )
+  colnames(results) <- c("All", "Treatment", "Comparison")
+  
+knitr::kable(
+  results, digits = 3, caption = "Means of observed variables by treatment group"
+)
+
+```
+
+Below are the standard deviations of the test scores
+
+```{r, echo=FALSE}
+results <- cbind(
+    "All" = t(data %>% select(math, science) %>% summarise_all(sd)),
+    "Treatment" = t(data %>% filter(treat == 1) %>% select(math, science) %>% summarise_all(sd)),
+    "Comparison" = t(data %>% filter(treat == 0) %>% select(math, science) %>% summarise_all(sd))
+  )
+  colnames(results) <- c("All", "Treatment", "Comparison")
+  
+knitr::kable(
+  results, digits = 3, caption = "Standard deviations of observed variables by treatment group"
+)
+```
+
+The final results are based on a simple regression model which modeled the end of year science test as a function of exposure to the program (`treat`) and the other covariates.
+
+```{r, echo=FALSE}
+
+knitr::kable(
+  summary(lm(science ~ treat + math +ses+nonwhite, data = data))$coef,digits = 3, caption = "Regression coefficients predicting standardized science scores (with covariates)"
+)
+
+```
+
+A model without the covariates was also presented
+
+```{r, echo=FALSE}
+
+knitr::kable(
+  summary(lm(science ~ treat, data = data))$coef,digits = 3, caption = "Regression coefficients predicting standardized science scores (without covariates)"
+)
+
+```
+
+# Question
+
+Based on the information above and below, decide whether you think the program has a causal impact on science scores. At the end of our discussion, your lab leader will inform you of the actual treatment impact that was programmed into these data. 
+
+## Other resources
+
+The following charts may provide some clues
+
+``` {r, echo = FALSE, warning = FALSE, message = FALSE,fig.height=4.5}
+plot(data[which(data$treat == 1), "math"], data[which(data$treat == 1), "science"], type = "p", col = "blue", ylim = c(30,90), xlim = c(30,80), pch = 1, xlab = "math", ylab = "science")
+par(new=TRUE)
+plot(data[which(data$treat == 0), "math"], data[which(data$treat == 0), "science"], type = "p", col = "red", ylim = c(30,90), xlim = c(30,80), pch = 2,  xlab = "math", ylab = "science")
+legend(30,90, pch = c(1,2), col = c("blue","red"), legend = c("T","C"))
+title("Scatterplot of Science and \nMath Scores \nby T and C students")
+```
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE,fig.height=3.5}
+boxplot(data$science~data$treat, xlab="Treatment Status", ylab="Science score")
+title("Boxplot of Science Scores \nby T and C Students")
+```
+``` {r, echo = FALSE, warning = FALSE, message = FALSE,fig.height=3.5}
+boxplot(data$math~data$treat, xlab="Treatment Status", ylab="Math score")
+title("Boxplot of Math Scores by T and C Students")
+```
+
+# References
+
+[Barker, B. S., & Ansorge, J. (2007). Robotics as means to increase
+achievement scores in an informal learning environment. *Journal of
+research on technology in education*, *39*(3),
+229-243.](http://web.b.ebscohost.com.turing.library.northwestern.edu/ehost/pdfviewer/pdfviewer?vid=1&sid=71d566ac-b312-45f8-a4d1-00b37f0e57c7%40sessionmgr103)
