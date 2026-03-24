@@ -4,12 +4,46 @@ Interactive power analysis and study design planner built with Shiny.
 
 ## Installation
 
+### Prerequisites: Install devtools
+
+First, you need to install the `devtools` package:
+
+```r
+install.packages("devtools")
+```
+
+#### Platform-specific requirements
+
+**Windows:**
+- No additional setup needed beyond R and RTools (typically included with R installation)
+
+**macOS:**
+```r
+# Install Xcode Command Line Tools (required once)
+# Run in Terminal:
+xcode-select --install
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+# Run in Terminal:
+sudo apt-get install build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev
+```
+
+**Linux (Fedora/RHEL):**
+```bash
+# Run in Terminal:
+sudo yum install gcc gcc-c++ make libcurl-devel libxml2-devel openssl-devel
+```
+
+### Install plannerPackage
+
 ```r
 # Install from GitHub
-devtools::install_github("hedbergec/plannerPackage")
+devtools::install_github("hedbergec/plannerApp", subdir = "plannerPackage")
 
 # Or from local directory
-devtools::install_local("path/to/plannerPackage")
+devtools::install_local("path/to/plannerApp/plannerPackage")
 ```
 
 ## Usage
@@ -43,6 +77,8 @@ The Shiny app will launch in your default web browser. Use it to:
 - ggplot2
 - tidyverse
 - shinythemes
+- data.table
+- ggpubr
 
 ## License
 
