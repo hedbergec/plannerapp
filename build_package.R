@@ -127,7 +127,21 @@ if (dir_exists(planner_src)) {
   app_files <- list.files(planner_src, pattern = "\\.(R|html|js|css)$", full.names = TRUE, recursive = FALSE)
   for (file in app_files) {
     dest <- file.path(package_dir, "inst", "app", basename(file))
-    file_copy(file, dest, overwrite = TRUE)
+    
+    # If this is app.R, update the data loading path
+    if (basename(file) == "app.R") {
+      app_content <- readLines(file)
+      # Replace the old load statement with system.file approach
+      app_content <- gsub(
+        'load\\("appData\\.RData"\\)',
+        'appDataPath <- system.file("app", "appData.RData", package = "plannerPackage")\n  load(appDataPath)',
+        app_content
+      )
+      writeLines(app_content, dest)
+      message("Updated app.R data path to use system.file()")
+    } else {
+      file_copy(file, dest, overwrite = TRUE)
+    }
   }
   
   # Copy www directory if it exists
