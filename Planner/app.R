@@ -1,10 +1,11 @@
-library(shiny)
+
 library(plotly)
 library(tidyverse)
 library(data.table)
 library(shinythemes)
 library(ggplot2)
 library(ggpubr)
+library(shiny)
 
 server <- function(input, output) {
   
@@ -409,281 +410,281 @@ server <- function(input, output) {
   
   #### QED Treatment Stats
   
-  qedData_stats_treat <- reactive({
-    req(qedData())
-    data <- qedData() %>% 
-      filter(treat == 1) %>% 
-      select(-treat) %>%
-      group_by(school) %>%
-      mutate(N = n()) %>%
-      summarise_all(c("mean","sd")) %>%
-      mutate(N = N_mean) %>%
-      select(-c(N_mean, N_sd)) %>%
-      relocate(c(school,N)) %>%
-      data.frame() %>% round(digits = 2)
-    return(data)
-  })
-  
-  output$qedTableTreat <- renderDataTable({
-    req(qedData_stats_treat())
-    qedData_stats_treat() %>% 
-      select(-ends_with("_sd")) %>% 
-      rename_with(~gsub("_mean","",.x))
-  },options = list(
-    columnDefs = list(list(className = 'dt-center', targets = 5)),
-    pageLength = 10,
-    lengthMenu = c(10, 15, 20, 50, 100)
-  )
-  )
-  
-  output$qedTableTreatUI <- renderUI({
-    req(qedData_stats_treat())
-    dataTableOutput("qedTableTreat")
-  })
-  
-  
-  output$qedTableTreatTitle <- renderUI({
-    req(qedData_stats_treat())
-    h3("Treatment Schools")
-  })
-  
-  #### QED Treatment PICK ####
-  
-  output$treatPick <- renderUI({
-    req(qedData_stats_treat())
-    selectizeInput("treatpicked", 
-                   "Select treatment schools",
-                   choices = qedData_stats_treat()$school,
-                   select = qed_data[[paste0(input$qedScenario, "_treatlist")]],
-                   multiple = TRUE)
-    
-  })
-  
-  
-  #### QED Picked Treatment M and S for M-D ####
-  
-  qed_mahalanobis_center <- reactive({
-    req(input$treatpicked)
-    center_vector <- qedData() %>% 
-      filter(school %in% input$treatpicked) %>% 
-      select(-contains(c("school","treat"))) %>% 
-      summarise_all(mean) %>%
-      as.matrix()
-    
-    
-  })
-  
-  qed_mahalanobis_Sigma <- reactive({
-    req(input$treatpicked)
-    
-    Sigma <- qedData() %>% 
-      filter(school %in% input$treatpicked) %>% 
-      select(-contains(c("school","treat"))) %>% 
-      data.frame() %>%
-      cov()
-  })
-  
-  
-  #### QED Compare Stats ####
-  
-  qedData_stats_compare <- reactive({
-    req(qedData())
-    req(qed_mahalanobis_center())
-    req(qed_mahalanobis_Sigma())
-    
-    data <- qedData() %>% 
-      filter(treat == 0)
-    
-    data$d <- mahalanobis(data %>%
-                            select(-contains(c("school","treat"))) %>% 
-                            data.frame()
-                          ,center = qed_mahalanobis_center(), 
-                          cov = qed_mahalanobis_Sigma()) 
-    data <- data %>% 
-      select(-treat) %>%
-      group_by(school) %>%
-      mutate(N = n()) %>%
-      summarise_all(c("mean","sd")) %>%
-      mutate(N = N_mean) %>%
-      mutate(Mahalanobis_Distance = d_mean) %>%
-      select(-c(N_mean, N_sd, d_mean, d_sd)) %>%
-      relocate(c(school,N)) %>%
-      data.frame() 
-    
-    data <- data %>% 
-      relocate(c(school, N, Mahalanobis_Distance)) %>% 
-      data.frame() %>% round(digits = 2) 
-    
-    return(data)
-  })
-  
-  output$qedTableCompare <- renderDataTable({
-    req(qedData_stats_compare())
-    qedData_stats_compare() %>% 
-      select(-ends_with("_sd")) %>% 
-      rename_with(~gsub("_mean","",.x))
-  }, options = list(
-    columnDefs = list(list(className = 'dt-center', targets = 5)),
-    pageLength = 5,
-    lengthMenu = c(5, 10, 15, 20, 50, 100)
-  )
-  )
-  
-  output$qedTableCompareUI <- renderUI({
-    req(qedData_stats_compare())
-    dataTableOutput("qedTableCompare")
-  })
-  
-  
-  output$qedTableCompareTitle <- renderUI({
-    req(qedData_stats_compare())
-    h3("Comparison Schools")
-  })
-  
-  output$qedDescribeTitle <- renderUI({
-    req(qedData_stats_compare())
-    h3("All Descriptive Data")
-  })
-  
-  
-  #### QED Compare Pick ####
-  
-  output$comparePick <- renderUI({
-    req(qedData_stats_compare())
-    selectizeInput("comparepicked", 
-                   "Select comparison schools",
-                   choices = qedData_stats_compare()$school,
-                   select = qed_data[[paste0(input$qedScenario, "_comparelist")]],
-                   multiple = TRUE)
-  })
-  
-  qed_made_data <- reactive({
-    req(input$treatpicked)
-    req(input$comparepicked)
-    data <- rbind(
-      qedData() %>% filter(school %in% input$treatpicked) %>% mutate(treat = 1) %>% data.frame(),
-      qedData() %>% filter(school %in% input$comparepicked) %>% mutate(treat = 0) %>% data.frame()
-    )
-    return(data)
-  })
-  
-  
-  sumstats <- reactive({
-    req(qed_made_data())
-    sumstats <- qed_made_data() %>% 
-      select(-school) %>%
-      group_by(treat) %>% 
-      mutate(n = n()) %>%
-      summarise_all(c("mean", "sd"), na.rm = TRUE) %>%
-      ungroup() %>%
-      mutate(n = n_mean) %>%
-      select(-c(n_mean, n_sd)) %>%
-      relocate(c(treat, n)) %>%
-      data.frame()
-    
-    return(sumstats)
-    
-  })
-  
-  balancestats <- reactive({
-    req(sumstats()) 
-    results<- list()
-    for (v in qed_vars) {
-      n_c <- sumstats()[1,"n"]
-      n_i <- sumstats()[2,"n"]
-      sd_c <- sumstats()[1,paste0(v,"_sd")]
-      sd_i <- sumstats()[2,paste0(v,"_sd")]
-      m_c <- sumstats()[1,paste0(v,"_mean")]
-      m_i <- sumstats()[2,paste0(v,"_mean")]
-      
-      if (v == "pretest") {
-        results[[v]] <- (1-(3/(4*(n_i+n_c)-9)))*((m_i-m_c)/(sqrt((sd_c^2*(n_c-1)+sd_i^2*(n_i-1))/(n_c+n_i-2)))
-        )
-      }
-      else {
-        results[[v]] <- (1-(3/(4*(n_i+n_c)-9)))*log((m_i*(1-m_c))/(m_c*(1-m_i)))/1.65
-      }
-      
-      results[["Mahalanobis_Distance"]] <- qed_made_data() %>% 
-        filter(treat == 0) %>%
-        select(-c(school,treat)) %>%
-        data.frame() %>% 
-        mahalanobis(center = qed_mahalanobis_center(), 
-                    cov = qed_mahalanobis_Sigma()) %>% 
-        mean() %>% sqrt()
-      
-      
-    }
-    result <- do.call(data.frame,results) %>% 
-      relocate(Mahalanobis_Distance) %>% data.frame()
-    return(result)
-    
-  })
-  
-  output$sum_stats_table <- renderTable({
-    req(sumstats())
-    sumstats() %>%
-      select(-contains("_sd")) %>%
-      rename_with(~gsub("_mean","",.x))
-    
-  }, options = list(
-    columnDefs = list(list(className = 'dt-center', targets = 5)),
-    pageLength = 5,
-    lengthMenu = c(5, 10, 15, 20)
-  )
-  )
-  
-  output$sum_stats_tableUI <- renderUI({
-    req(sumstats())
-    tableOutput("sum_stats_table")
-    
-  })
-  
-  output$sum_stats_tableTitle <- renderUI({
-    req(sumstats())
-    h3("Means across Students by Treatment and Control")
-    
-  })
-  
-  output$balance_stats_table <- renderTable({
-    req(balancestats())
-    balancestats()
-    
-    
-  })
-  
-  output$balance_stats_tableUI <- renderUI({
-    req(balancestats())
-    tableOutput("balance_stats_table")
-    
-  })
-  
-  output$balance_stats_tableTitle <- renderUI({
-    req(balancestats())
-    h3("Balance Statistics between Treatment and Control")
-    
-  })
-  
-  output$explorepanels <- renderUI({
-    req(input$qedScenario != "waiting")
-    tabsetPanel(
-      tabPanel(
-        "Explore Comparison Schools",
-        fluidRow(
-          uiOutput("qedTableCompareTitle"),
-          uiOutput("qedTableCompareUI")
-        )
-      ),
-      tabPanel(
-        "Explore Treatment Schools",
-        fluidRow(
-          uiOutput("qedTableTreatTitle"),
-          uiOutput("qedTableTreatUI")
-        )
-      )
-      
-    )
-  })
+  # qedData_stats_treat <- reactive({
+  #   req(qedData())
+  #   data <- qedData() %>% 
+  #     filter(treat == 1) %>% 
+  #     select(-treat) %>%
+  #     group_by(school) %>%
+  #     mutate(N = n()) %>%
+  #     summarise_all(c("mean","sd")) %>%
+  #     mutate(N = N_mean) %>%
+  #     select(-c(N_mean, N_sd)) %>%
+  #     relocate(c(school,N)) %>%
+  #     data.frame() %>% round(digits = 2)
+  #   return(data)
+  # })
+  # 
+  # output$qedTableTreat <- renderDataTable({
+  #   req(qedData_stats_treat())
+  #   qedData_stats_treat() %>% 
+  #     select(-ends_with("_sd")) %>% 
+  #     rename_with(~gsub("_mean","",.x))
+  # },options = list(
+  #   columnDefs = list(list(className = 'dt-center', targets = 5)),
+  #   pageLength = 10,
+  #   lengthMenu = c(10, 15, 20, 50, 100)
+  # )
+  # )
+  # 
+  # output$qedTableTreatUI <- renderUI({
+  #   req(qedData_stats_treat())
+  #   dataTableOutput("qedTableTreat")
+  # })
+  # 
+  # 
+  # output$qedTableTreatTitle <- renderUI({
+  #   req(qedData_stats_treat())
+  #   h3("Treatment Schools")
+  # })
+  # 
+  # #### QED Treatment PICK ####
+  # 
+  # output$treatPick <- renderUI({
+  #   req(qedData_stats_treat())
+  #   selectizeInput("treatpicked", 
+  #                  "Select treatment schools",
+  #                  choices = qedData_stats_treat()$school,
+  #                  select = qed_data[[paste0(input$qedScenario, "_treatlist")]],
+  #                  multiple = TRUE)
+  #   
+  # })
+  # 
+  # 
+  # #### QED Picked Treatment M and S for M-D ####
+  # 
+  # qed_mahalanobis_center <- reactive({
+  #   req(input$treatpicked)
+  #   center_vector <- qedData() %>% 
+  #     filter(school %in% input$treatpicked) %>% 
+  #     select(-contains(c("school","treat"))) %>% 
+  #     summarise_all(mean) %>%
+  #     as.matrix()
+  #   
+  #   
+  # })
+  # 
+  # qed_mahalanobis_Sigma <- reactive({
+  #   req(input$treatpicked)
+  #   
+  #   Sigma <- qedData() %>% 
+  #     filter(school %in% input$treatpicked) %>% 
+  #     select(-contains(c("school","treat"))) %>% 
+  #     data.frame() %>%
+  #     cov()
+  # })
+  # 
+  # 
+  # #### QED Compare Stats ####
+  # 
+  # qedData_stats_compare <- reactive({
+  #   req(qedData())
+  #   req(qed_mahalanobis_center())
+  #   req(qed_mahalanobis_Sigma())
+  #   
+  #   data <- qedData() %>% 
+  #     filter(treat == 0)
+  #   
+  #   data$d <- mahalanobis(data %>%
+  #                           select(-contains(c("school","treat"))) %>% 
+  #                           data.frame()
+  #                         ,center = qed_mahalanobis_center(), 
+  #                         cov = qed_mahalanobis_Sigma()) 
+  #   data <- data %>% 
+  #     select(-treat) %>%
+  #     group_by(school) %>%
+  #     mutate(N = n()) %>%
+  #     summarise_all(c("mean","sd")) %>%
+  #     mutate(N = N_mean) %>%
+  #     mutate(Mahalanobis_Distance = d_mean) %>%
+  #     select(-c(N_mean, N_sd, d_mean, d_sd)) %>%
+  #     relocate(c(school,N)) %>%
+  #     data.frame() 
+  #   
+  #   data <- data %>% 
+  #     relocate(c(school, N, Mahalanobis_Distance)) %>% 
+  #     data.frame() %>% round(digits = 2) 
+  #   
+  #   return(data)
+  # })
+  # 
+  # output$qedTableCompare <- renderDataTable({
+  #   req(qedData_stats_compare())
+  #   qedData_stats_compare() %>% 
+  #     select(-ends_with("_sd")) %>% 
+  #     rename_with(~gsub("_mean","",.x))
+  # }, options = list(
+  #   columnDefs = list(list(className = 'dt-center', targets = 5)),
+  #   pageLength = 5,
+  #   lengthMenu = c(5, 10, 15, 20, 50, 100)
+  # )
+  # )
+  # 
+  # output$qedTableCompareUI <- renderUI({
+  #   req(qedData_stats_compare())
+  #   dataTableOutput("qedTableCompare")
+  # })
+  # 
+  # 
+  # output$qedTableCompareTitle <- renderUI({
+  #   req(qedData_stats_compare())
+  #   h3("Comparison Schools")
+  # })
+  # 
+  # output$qedDescribeTitle <- renderUI({
+  #   req(qedData_stats_compare())
+  #   h3("All Descriptive Data")
+  # })
+  # 
+  # 
+  # #### QED Compare Pick ####
+  # 
+  # output$comparePick <- renderUI({
+  #   req(qedData_stats_compare())
+  #   selectizeInput("comparepicked", 
+  #                  "Select comparison schools",
+  #                  choices = qedData_stats_compare()$school,
+  #                  select = qed_data[[paste0(input$qedScenario, "_comparelist")]],
+  #                  multiple = TRUE)
+  # })
+  # 
+  # qed_made_data <- reactive({
+  #   req(input$treatpicked)
+  #   req(input$comparepicked)
+  #   data <- rbind(
+  #     qedData() %>% filter(school %in% input$treatpicked) %>% mutate(treat = 1) %>% data.frame(),
+  #     qedData() %>% filter(school %in% input$comparepicked) %>% mutate(treat = 0) %>% data.frame()
+  #   )
+  #   return(data)
+  # })
+  # 
+  # 
+  # sumstats <- reactive({
+  #   req(qed_made_data())
+  #   sumstats <- qed_made_data() %>% 
+  #     select(-school) %>%
+  #     group_by(treat) %>% 
+  #     mutate(n = n()) %>%
+  #     summarise_all(c("mean", "sd"), na.rm = TRUE) %>%
+  #     ungroup() %>%
+  #     mutate(n = n_mean) %>%
+  #     select(-c(n_mean, n_sd)) %>%
+  #     relocate(c(treat, n)) %>%
+  #     data.frame()
+  #   
+  #   return(sumstats)
+  #   
+  # })
+  # 
+  # balancestats <- reactive({
+  #   req(sumstats()) 
+  #   results<- list()
+  #   for (v in qed_vars) {
+  #     n_c <- sumstats()[1,"n"]
+  #     n_i <- sumstats()[2,"n"]
+  #     sd_c <- sumstats()[1,paste0(v,"_sd")]
+  #     sd_i <- sumstats()[2,paste0(v,"_sd")]
+  #     m_c <- sumstats()[1,paste0(v,"_mean")]
+  #     m_i <- sumstats()[2,paste0(v,"_mean")]
+  #     
+  #     if (v == "pretest") {
+  #       results[[v]] <- (1-(3/(4*(n_i+n_c)-9)))*((m_i-m_c)/(sqrt((sd_c^2*(n_c-1)+sd_i^2*(n_i-1))/(n_c+n_i-2)))
+  #       )
+  #     }
+  #     else {
+  #       results[[v]] <- (1-(3/(4*(n_i+n_c)-9)))*log((m_i*(1-m_c))/(m_c*(1-m_i)))/1.65
+  #     }
+  #     
+  #     results[["Mahalanobis_Distance"]] <- qed_made_data() %>% 
+  #       filter(treat == 0) %>%
+  #       select(-c(school,treat)) %>%
+  #       data.frame() %>% 
+  #       mahalanobis(center = qed_mahalanobis_center(), 
+  #                   cov = qed_mahalanobis_Sigma()) %>% 
+  #       mean() %>% sqrt()
+  #     
+  #     
+  #   }
+  #   result <- do.call(data.frame,results) %>% 
+  #     relocate(Mahalanobis_Distance) %>% data.frame()
+  #   return(result)
+  #   
+  # })
+  # 
+  # output$sum_stats_table <- renderTable({
+  #   req(sumstats())
+  #   sumstats() %>%
+  #     select(-contains("_sd")) %>%
+  #     rename_with(~gsub("_mean","",.x))
+  #   
+  # }, options = list(
+  #   columnDefs = list(list(className = 'dt-center', targets = 5)),
+  #   pageLength = 5,
+  #   lengthMenu = c(5, 10, 15, 20)
+  # )
+  # )
+  # 
+  # output$sum_stats_tableUI <- renderUI({
+  #   req(sumstats())
+  #   tableOutput("sum_stats_table")
+  #   
+  # })
+  # 
+  # output$sum_stats_tableTitle <- renderUI({
+  #   req(sumstats())
+  #   h3("Means across Students by Treatment and Control")
+  #   
+  # })
+  # 
+  # output$balance_stats_table <- renderTable({
+  #   req(balancestats())
+  #   balancestats()
+  #   
+  #   
+  # })
+  # 
+  # output$balance_stats_tableUI <- renderUI({
+  #   req(balancestats())
+  #   tableOutput("balance_stats_table")
+  #   
+  # })
+  # 
+  # output$balance_stats_tableTitle <- renderUI({
+  #   req(balancestats())
+  #   h3("Balance Statistics between Treatment and Control")
+  #   
+  # })
+  # 
+  # output$explorepanels <- renderUI({
+  #   req(input$qedScenario != "waiting")
+  #   tabsetPanel(
+  #     tabPanel(
+  #       "Explore Comparison Schools",
+  #       fluidRow(
+  #         uiOutput("qedTableCompareTitle"),
+  #         uiOutput("qedTableCompareUI")
+  #       )
+  #     ),
+  #     tabPanel(
+  #       "Explore Treatment Schools",
+  #       fluidRow(
+  #         uiOutput("qedTableTreatTitle"),
+  #         uiOutput("qedTableTreatUI")
+  #       )
+  #     )
+  #     
+  #   )
+  # })
   
   
   #### Randomization ####
@@ -696,6 +697,7 @@ server <- function(input, output) {
   })
   
   output$setTheSeed <- renderUI({
+    req(input$choose_a_seed)
     if (input$choose_a_seed == "Yes") {
       numericInput("the_set_seed",
                    "Type a number",
@@ -880,32 +882,32 @@ ui <- fluidPage(
           )
         )
       )
-    ),
-    tabPanel(
-      "QED Selection",
-      fluid = TRUE,
-      fluidPage(
-        uiOutput("qedScenarioMenu"),
-        mainPanel(
-          fluidRow(
-            uiOutput("balance_stats_tableTitle"),
-            uiOutput("balance_stats_tableUI"),
-            uiOutput("sum_stats_tableTitle"),
-            uiOutput("sum_stats_tableUI")
-          ),
-          fluidRow(
-            uiOutput("selectionTitle"),
-            column(6,
-                   uiOutput("comparePick")
-            ),
-            column(6,
-                   uiOutput("treatPick")
-            )
-          ),
-          uiOutput("explorepanels")
-        )
-      )
-    )
+    ) #,
+    # tabPanel(
+    #   "QED Selection",
+    #   fluid = TRUE,
+    #   fluidPage(
+    #     uiOutput("qedScenarioMenu"),
+    #     mainPanel(
+    #       fluidRow(
+    #         uiOutput("balance_stats_tableTitle"),
+    #         uiOutput("balance_stats_tableUI"),
+    #         uiOutput("sum_stats_tableTitle"),
+    #         uiOutput("sum_stats_tableUI")
+    #       ),
+    #       fluidRow(
+    #         uiOutput("selectionTitle"),
+    #         column(6,
+    #                uiOutput("comparePick")
+    #         ),
+    #         column(6,
+    #                uiOutput("treatPick")
+    #         )
+    #       ),
+    #       uiOutput("explorepanels")
+    #     )
+    #   )
+    # )
   )
 )
 

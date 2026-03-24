@@ -5,9 +5,8 @@ account: steppcenter
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6630294
-bundleId: 6091528
+bundleId: 8769415
 url: https://steppcenter.shinyapps.io/Planner/
-when: 1657634983.20707
-lastSyncTime: 1657634983.20707
 asMultiple: FALSE
 asStatic: FALSE
+ignoredFiles: .Rapp.history

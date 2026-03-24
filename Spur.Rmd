@@ -1,0 +1,96 @@
+---
+title: "Spur_Impact"
+author: "Eric Hedberg"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+load("Planner/appData.Rdata")
+data <- qed_data[["between_random"]][which(qed_data[["between_random"]]$school == 306),-c(1,2,7)]
+data$ses <- 1-data$ses
+colnames(data) <- c("nonwhite", "ses", "math", "science")
+set.seed(101)
+```
+
+## How I rigged it
+
+The chance of treatment assignment is based on the math scores z-score. 
+
+```{r}
+plot(seq(from = -4, to = 4, by = .1), pnorm(seq(from = -4, to = 4, by = .1)), type = "l", ylab = "Cumul. Prob", xlab = "z")
+```
+
+
+and you see that in the code `pnorm(scale(data$math)-1)` below (I add a bit of an offset with the `-1`). Note that I do not build in any "treatment effect," so whatever we see is an "echo" of math. 
+
+
+```{r}
+data$treat <- rbinom(100,1,pnorm(scale(data$math)-1))
+
+summary(lm(science ~ treat + math +ses+nonwhite, data = data))$coef
+```
+
+Next, I wrote a quick function to help do this many times
+
+```{r}
+spur_impact <- function(data){
+  data$treat <- rbinom(100,1,pnorm(scale(data$math)-1))
+  coefs <- summary(lm(science ~ treat + math +ses+nonwhite, data = data))$coef
+  rawcoefs <- summary(lm(science ~ treat, data = data))$coef
+  
+  return(cbind(b_c = coefs[2,1], p_c = coefs[2,4],b_uc = rawcoefs[2,1], p_uc = rawcoefs[2,4]))
+}
+```
+
+So, we can do this a thousand times.
+
+```{r}
+results <- data.frame(t(replicate(1000,spur_impact(data), simplify = TRUE)))
+```
+
+If we don't control for the math which, the placebo treatment effect is always significant  
+```{r}
+mean(results$X4 <= .05)
+```
+
+But we if we control for it, it can happen, but not a lot
+
+```{r}
+mean(results$X2 <= .05)
+```
+
+Finally, suppose there was a treatment effect of .5, and it was related to something you didn't measure and sorta correlated with what you have. This new function does this
+
+
+```{r}
+unobs_spur_impact <- function(data){
+  other_var <- scale(rnorm(data$math*.15+data$ses*(-.05)+data$nonwhite*(.05))+rnorm(100))
+  treat_effect <- runif(100, .25,.75)
+  data$treat <- rbinom(100,1,pnorm(other_var))
+  data$science <- data$science+treat_effect*data$treat
+  coefs <- summary(lm(science ~ treat + math +ses+nonwhite, data = data))$coef
+  rawcoefs <- summary(lm(science ~ treat, data = data))$coef
+  
+  return(cbind(b_c = coefs[2,1], p_c = coefs[2,4],b_uc = rawcoefs[2,1], p_uc = rawcoefs[2,4]))
+}
+```
+
+So, we can do this a thousand times.
+
+```{r}
+results <- data.frame(t(replicate(1000,unobs_spur_impact(data), simplify = TRUE)))
+```
+
+If we don't control for the math which, the placebo treatment effect is always significant  
+```{r}
+mean(results$X4 <= .05)
+```
+
+But we if we control for it, it can happen more often
+
+```{r}
+mean(results$X2 <= .05)
+```

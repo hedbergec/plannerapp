@@ -7,6 +7,8 @@ output: word_document
 load("../Planner/appData.Rdata")
 ```
 
+# Randomization in General
+
 ## Important Note
 
 Randomization can be a very complex task. The purpose of this lab is to give everyone a feel for what is ultimately done with computer algorithms. The hope is that you can explore these topics during this lab.
@@ -88,3 +90,5 @@ A member of the study team claims that a better study would use a lower portion 
 ### Question 6
 
 Using the [planner tool](https://steppcenter.shinyapps.io/Planner/), randomize 16 families where 4 families are selected to the intervention, again. This time, however, choose to set a seed and leave the default 123456. You can press the randomization/re-randomization button, too. Compare the status of family 12 with another student. Is it the same? With the same friend, pick another number and enter it into the seed field. Did the status change? Did you both get the same result for family 12? How about other families?
+
+

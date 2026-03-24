@@ -1,0 +1,13 @@
+name: Planner1
+title: Planner1
+username: steppcenter
+account: steppcenter
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 12297092
+bundleId: 8844297
+url: https://steppcenter.shinyapps.io/Planner1/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .Rapp.history

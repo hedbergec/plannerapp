@@ -143,7 +143,7 @@ their science classes.
 
 # Plausible Evaluation Design B
 
-## Multisite Individually Randomized Design with Fixed Effects
+## Blocked Individually Randomized Design with Fixed Effects
 
 Suppose researchers wish to evaluate the effectiveness of a similar
 program on student science grades in school. Researchers enroll students

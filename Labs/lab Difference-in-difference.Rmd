@@ -1,5 +1,5 @@
 ---
-title: "Lab for difference in difference designs"
+title: "Lab for difference-in-difference designs"
 output: word_document
 editor_options: 
   markdown: 

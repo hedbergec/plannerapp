@@ -309,10 +309,13 @@ qed_vars <- c("nonwhite","ses","pretest", "urban")
 rm(f)
 rm(data)
 
+rm(qed_vars) #remove these from the app data
+rm(qed_data) #removed these from the app data 
 
 save.image("Planner/appData.RData")
 
 #write.csv(cbind(names(menuBank[["functionList"]])), "functions.csv")
+
 
 
 
