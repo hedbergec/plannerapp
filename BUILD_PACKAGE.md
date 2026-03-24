@@ -31,15 +31,17 @@ This will:
 The script will output next steps. Typically:
 
 1. Check that everything looks good
-2. Change to the plannerPackage directory
+2. Change to the plannerPackage directory:
+   ```bash
+   cd plannerPackage
+   ```
 3. Run package checks:
    ```r
-   devtools::load_all("../plannerPackage")
-   devtools::check("../plannerPackage")
+   devtools::load_all()
+   devtools::check()
    ```
-4. Commit and push to GitHub:
+4. If you have git set up for the package, commit and push changes:
    ```bash
-   cd ../plannerPackage
    git add .
    git commit -m "Update from plannerApp"
    git push
@@ -47,9 +49,9 @@ The script will output next steps. Typically:
 
 ## The plannerPackage Repository
 
-The built package lives in: `../plannerPackage/`
+The built package lives in: `./plannerPackage/` (subdirectory of plannerApp)
 
-It has its own git repository at: https://github.com/hedbergec/plannerPackage
+It has its own git repository at: `./plannerPackage/.git/`
 
 ## Workflow
 
@@ -59,12 +61,10 @@ plannerApp/
 ├── auto functions/      → Updated here
 ├── Planner/
 │   └── app.R           → Updated here
-└── build_package.R     ← Run this
-
-        ↓ (build_package.R copies and transforms)
-        
-../plannerPackage/
-├── R/                  → Contains all functions
-├── inst/app/           → Contains Shiny app
-└── .git/               → Git repo for distribution
+├── build_package.R     ← Run this
+│
+└── plannerPackage/     ← Built here
+    ├── R/              → Contains all functions
+    ├── inst/app/       → Contains Shiny app
+    └── .git/           → Git repo (optional, for distribution)
 ```

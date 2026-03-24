@@ -30,7 +30,7 @@ if (is.null(app_dir)) {
 }
 
 source_dir <- app_dir
-package_dir <- file.path(dirname(app_dir), "plannerPackage")
+package_dir <- file.path(source_dir, "plannerPackage")
 
 message("====================================")
 message("Building plannerPackage")
