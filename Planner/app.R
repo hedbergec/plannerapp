@@ -9,7 +9,8 @@ library(shiny)
 
 server <- function(input, output) {
   
-  load("appData.RData")
+  appDataPath <- system.file("app", "appData.RData", package = "plannerPackage")
+  load(appDataPath)
   
   
   #### AUTO Generated Menus ####
