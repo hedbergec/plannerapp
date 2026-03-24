@@ -1,0 +1,26 @@
+Package: plannerPackage
+Title: Interactive Study Design and Power Analysis Planner
+Version: 0.1.0
+Authors@R: 
+    person(given = "First",
+           family = "Last",
+           role = c("aut", "cre"),
+           email = "first.last@example.com")
+Description: A Shiny application for interactive power analysis, minimum detectable effect size (MDES) calculation, and study design planning for RCTs and quasi-experimental designs.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Depends: 
+    R (>= 4.0)
+Imports:
+    shiny,
+    plotly,
+    tidyverse,
+    data.table,
+    shinythemes,
+    ggplot2,
+    ggpubr
+Suggests:
+    testthat (>= 3.0.0)
+
